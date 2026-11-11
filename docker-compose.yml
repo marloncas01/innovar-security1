@@ -1,0 +1,79 @@
+version: "3.8"
+
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: innovar-postgres
+    restart: always
+    environment:
+      POSTGRES_USER: innovar_user
+      POSTGRES_PASSWORD: innovar_password_secure_2025
+      POSTGRES_DB: innovar_security
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./backups:/backups
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U innovar_user -d innovar_security"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    # Configuración de backups automáticos
+    # Se ejecuta un script de backup periódico
+    # Ver prisma/backup.ts para la implementación
+    command: >
+      postgres
+      -c max_connections=200
+      -c shared_buffers=256MB
+      -c effective_cache_size=768MB
+      -c wal_level=replica
+      -c archive_mode=on
+      -c archive_command='cp %p /backups/wal/%f'
+      -c max_wal_size=1GB
+      -c min_wal_size=80MB
+      -c checkpoint_completion_target=0.9
+      -c logging_min_duration_statement=1000
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: innovar-app
+    restart: always
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: development
+      DATABASE_URL: postgresql://innovar_user:innovar_password_secure_2025@db:5432/innovar_security
+      NEXTAUTH_URL: http://localhost:3000
+      NEXTAUTH_SECRET: ${NEXTAUTH_SECRET:-development-secret-change-me}
+      APP_NAME: Innovar Security
+      UPLOAD_MAX_SIZE: 5242880
+    volumes:
+      - /app/node_modules
+      - /app/public
+      - /app/uploads
+    # Health check
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+
+volumes:
+  postgres_data:
+    driver: local
+
+# Backup strategy configuration
+# Para producción, se recomienda:
+# 1. Volumen dedicado para backups: postgres_data y /backups
+# 2. Cron job externo o container separado para backups
+# 3. Sincronización a S3/Cloudflare R2 para backups remotos
+# 4. Rotación de backups (mantener últimos 7 días)
+# 5. Monitoreo de espacio en disco
+# 6. Pruebas de restauración periódicas

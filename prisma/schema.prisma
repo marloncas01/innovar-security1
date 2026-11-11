@@ -1,0 +1,412 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// ========== USUARIOS ==========
+
+model User {
+  id            String    @id @default(uuid())
+  email         String    @unique
+  password      String
+  name          String
+  role          String    @default("CLIENT")
+  phone         String?
+  active        Boolean   @default(true)
+  emailVerified Boolean   @default(false)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  client        Client?
+  notifications UserNotification[]
+  appointmentsCreated Appointment[] @relation("AppointmentCreatedBy")
+
+  @@map("users")
+}
+
+// ========== CLIENTES ==========
+
+model Client {
+  id          String   @id @default(uuid())
+  userId      String   @unique
+  name        String
+  phone       String
+  email       String
+  identification String?
+  address     String?
+  city        String?
+  municipality String?
+  department  String?
+  zipCode     String?
+  notes       String?
+  preferredAddress String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user        User     @relation(fields: [userId], references: [id])
+  appointments Appointment[]
+  quotes       Quote[]
+  notifications ClientNotification[]
+
+  @@map("clients")
+}
+
+// ========== SERVICIOS ==========
+
+model Service {
+  id          String   @id @default(uuid())
+  name        String
+  slug        String   @unique
+  description String?
+  price       Float?
+  duration    Int?
+  imageUrl    String?
+  features    String   @default("[]")
+  exclusions  String   @default("[]")
+  requiresVisit Boolean @default(false)
+  active      Boolean  @default(true)
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  appointments Appointment[]
+
+  @@map("services")
+}
+
+// ========== CITAS ==========
+
+model Appointment {
+  id              String   @id @default(uuid())
+  clientId        String
+  serviceId       String
+  createdById     String?
+  scheduledDate   DateTime
+  startTime       String
+  endTime         String
+  estimatedEnd    String?
+  status          String   @default("PENDING")
+  cost            Float?
+  discount        Float?   @default(0)
+  totalCost       Float?
+  locationMunicipality String?
+  locationAddress String?
+  locationReference String?
+  locationNotes   String?
+  conditionNotes  String?
+  hasHeightWork   Boolean  @default(false)
+  hasElectricRisk Boolean  @default(false)
+  hasComplicatedAccess Boolean @default(false)
+  hasSpecialConditions Boolean @default(false)
+  specialConditionsDescription String?
+  adminNotes      String?
+  technicianNotes String?
+  clientNotAvailable Boolean @default(false)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  confirmedAt     DateTime?
+  completedAt     DateTime?
+  cancelledAt     DateTime?
+
+  client        Client    @relation(fields: [clientId], references: [id])
+  service       Service   @relation(fields: [serviceId], references: [id])
+  createdBy     User?     @relation("AppointmentCreatedBy", fields: [createdById], references: [id])
+  payment       Payment?
+  photos        Photo[]
+  reprogramRequests ReprogramRequest[]
+  historyItems  AppointmentHistory[]
+  quotes        Quote[]
+
+  @@map("appointments")
+}
+
+model AppointmentHistory {
+  id            String   @id @default(uuid())
+  appointmentId String
+  action        String
+  details       String?
+  performedBy   String
+  performedAt   DateTime @default(now())
+
+  appointment   Appointment @relation(fields: [appointmentId], references: [id])
+
+  @@map("appointment_history")
+}
+
+// ========== PAGOS ==========
+
+model Payment {
+  id            String   @id @default(uuid())
+  appointmentId String   @unique
+  amount        Float
+  currency      String   @default("COP")
+  method        String?
+  status        String   @default("PENDING")
+  reference     String?
+  transactionId String?
+  description   String?
+  notes         String?
+  paidAt        DateTime?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  appointment   Appointment @relation(fields: [appointmentId], references: [id])
+
+  @@map("payments")
+}
+
+// ========== FOTOGRAFÍAS ==========
+
+model Photo {
+  id            String   @id @default(uuid())
+  appointmentId String
+  url           String
+  description   String?
+  fileName      String
+  mimeType      String
+  fileSize      Int
+  order         Int      @default(0)
+  uploadedAt    DateTime @default(now())
+
+  appointment   Appointment @relation(fields: [appointmentId], references: [id])
+
+  @@map("photos")
+}
+
+// ========== REPROGRAMACIÓN ==========
+
+model ReprogramRequest {
+  id              String   @id @default(uuid())
+  appointmentId   String
+  newDate         DateTime?
+  newTime         String?
+  reason          String?
+  status          String   @default("PENDING")
+  adminNotes      String?
+  adminRespondedAt DateTime?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  appointment   Appointment @relation(fields: [appointmentId], references: [id])
+
+  @@map("reprogram_requests")
+}
+
+// ========== COTIZACIONES ==========
+
+model Quote {
+  id            String   @id @default(uuid())
+  appointmentId String
+  clientId      String
+  items         String   @default("[]")
+  subtotal      Float
+  displacement  Float?
+  total         Float
+  observations  String?
+  status        String   @default("DRAFT")
+  sentAt        DateTime?
+  validUntil    DateTime?
+  acceptedAt    DateTime?
+  rejectedAt    DateTime?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  appointment   Appointment @relation(fields: [appointmentId], references: [id])
+  client        Client      @relation(fields: [clientId], references: [id])
+
+  @@map("quotes")
+}
+
+// ========== CÁMARAS ==========
+
+model Camera {
+  id          String   @id @default(uuid())
+  name        String
+  slug        String   @unique
+  brand       String?
+  model       String?
+  type        String?
+  description String?
+  imageUrl    String?
+  price       Float?
+  features    String   @default("[]")
+  recommendedUse String?
+  active      Boolean  @default(true)
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("cameras")
+}
+
+// ========== HORARIOS ==========
+
+model Schedule {
+  id          String   @id @default(uuid())
+  dayOfWeek   Int
+  startTime   String
+  endTime     String
+  blockDuration Int?
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("schedules")
+}
+
+model ScheduleException {
+  id          String   @id @default(uuid())
+  date        DateTime
+  description String?
+  type        String   @default("BLOCKED")
+  startTime   String?
+  endTime     String?
+  notes       String?
+  createdAt   DateTime @default(now())
+
+  @@map("schedule_exceptions")
+}
+
+// ========== ZONAS ==========
+
+model Zone {
+  id          String   @id @default(uuid())
+  name        String
+  municipality String?
+  department  String?
+  baseDistance Float?
+  ratePerKm   Float?
+  flatRate    Float?
+  notes       String?
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("zones")
+}
+
+// ========== NOTIFICACIONES ==========
+
+model UserNotification {
+  id            String    @id @default(uuid())
+  userId        String
+  type          String
+  title         String
+  message       String
+  channel       String?
+  status        String    @default("PENDING")
+  readAt        DateTime?
+  appointmentId String?
+  metadata      String?
+  sentAt        DateTime?
+  createdAt     DateTime  @default(now())
+
+  user          User      @relation(fields: [userId], references: [id])
+
+  @@map("user_notifications")
+}
+
+model ClientNotification {
+  id            String    @id @default(uuid())
+  clientId      String
+  type          String
+  title         String
+  message       String
+  channel       String?
+  status        String    @default("PENDING")
+  readAt        DateTime?
+  appointmentId String?
+  quoteId       String?
+  metadata      String?
+  sentAt        DateTime?
+  createdAt     DateTime  @default(now())
+
+  client        Client    @relation(fields: [clientId], references: [id])
+
+  @@map("client_notifications")
+}
+
+// ========== CONTENIDO ==========
+
+model Content {
+  id          String   @id @default(uuid())
+  section     String   @unique
+  title       String?
+  subtitle    String?
+  description String?
+  imageUrl    String?
+  buttonText  String?
+  buttonUrl   String?
+  seoTitle    String?
+  seoDescription String?
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("content")
+}
+
+// ========== FAQ ==========
+
+model FAQ {
+  id          String   @id @default(uuid())
+  question    String
+  answer      String
+  category    String?
+  active      Boolean  @default(true)
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("faqs")
+}
+
+// ========== CHATBOT ==========
+
+model ChatbotMessage {
+  id          String   @id @default(uuid())
+  type        String
+  question    String?
+  answer      String?
+  options     String   @default("[]")
+  actionUrl   String?
+  sortOrder   Int      @default(0)
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("chatbot_messages")
+}
+
+// ========== CONFIGURACIÓN ==========
+
+model Setting {
+  id          String   @id @default(uuid())
+  key         String   @unique
+  value       String
+  description String?
+  type        String   @default("STRING")
+  group       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("settings")
+}
+
+// ========== RECUPERACIÓN DE CONTRASEÑA ==========
+
+model PasswordResetToken {
+  id        String   @id @default(uuid())
+  email     String
+  token     String   @unique
+  expiresAt DateTime
+  used      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([token])
+  @@index([email])
+}
