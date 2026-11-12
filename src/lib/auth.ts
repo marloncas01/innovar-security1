@@ -1,5 +1,6 @@
 import { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
+import { signInSchema } from "@/lib/validators";
 import prisma from "@/lib/prisma";
 import bcrypt from "bcryptjs";
 
@@ -12,19 +13,18 @@ export const authConfig: NextAuthOptions = {
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
-        if (!credentials?.email || !credentials?.password) {
-          return null;
-        }
+        const parsed = signInSchema.safeParse(credentials);
+        if (!parsed.success) return null;
 
         const user = await prisma.user.findUnique({
-          where: { email: credentials.email },
+          where: { email: parsed.data.email },
         });
 
         if (!user || !user.active) {
           return null;
         }
 
-        const isValid = await bcrypt.compare(credentials.password, user.password);
+        const isValid = await bcrypt.compare(parsed.data.password, user.password);
 
         if (!isValid) {
           return null;

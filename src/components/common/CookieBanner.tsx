@@ -7,19 +7,17 @@ export default function CookieBanner() {
   const [show, setShow] = useState(false);
 
   useEffect(() => {
-    const consent = localStorage.getItem("cookie_consent");
-    if (!consent) {
-      setShow(true);
-    }
+    try { setShow(!localStorage.getItem("cookie_consent")); }
+    catch { setShow(true); }
   }, []);
 
   const handleAccept = () => {
-    localStorage.setItem("cookie_consent", "accepted");
+    try { localStorage.setItem("cookie_consent", "accepted"); } catch { /* Browser storage may be disabled. */ }
     setShow(false);
   };
 
   const handleDecline = () => {
-    localStorage.setItem("cookie_consent", "essential_only");
+    try { localStorage.setItem("cookie_consent", "essential_only"); } catch { /* Browser storage may be disabled. */ }
     setShow(false);
   };
 

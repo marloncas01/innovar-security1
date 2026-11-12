@@ -54,7 +54,7 @@ export default function ServiciosPage() {
   const [catalogUnavailable, setCatalogUnavailable] = useState(false);
 
   useEffect(() => {
-    fetch("/api/services")
+    fetch("/api/services", { signal: AbortSignal.timeout(8000) })
       .then(async (res) => {
         if (!res.ok) throw new Error("Catálogo no disponible");
         const data: unknown = await res.json();
@@ -121,7 +121,8 @@ export default function ServiciosPage() {
                 return (
                   <div
                     key={service.id}
-                    className="group bg-[var(--color-surface)] border border-[var(--color-border)] rounded-xl p-6 hover:border-[var(--color-accent)]/30 transition-all duration-200 flex flex-col"
+                    id={service.slug}
+                    className="scroll-mt-24 group bg-[var(--color-surface)] border border-[var(--color-border)] rounded-xl p-6 hover:border-[var(--color-accent)]/30 transition-all duration-200 flex flex-col"
                   >
                     {/* Name */}
                     <h3 className="text-lg font-bold text-[var(--color-text-primary)] mb-2">

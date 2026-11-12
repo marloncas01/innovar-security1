@@ -4,6 +4,8 @@ import { authConfig } from "@/lib/auth";
 import { getClientIdFromUser } from "@/lib/appointments";
 import { getClientNotifications, markAsRead } from "@/lib/notification-logic";
 
+export const dynamic = "force-dynamic";
+
 export async function GET(request: NextRequest) {
   try {
     const session = await getServerSession(authConfig);

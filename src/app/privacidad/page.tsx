@@ -3,6 +3,7 @@ import { Metadata } from "next";
 import PublicNavbar from "@/components/layout/PublicNavbar";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "/privacidad" },
   title: "Política de Privacidad",
   description: "Política de tratamiento de datos personales de Innovar Security de conformidad con la Ley 1581 de 2012 de Colombia.",
 };

@@ -4,6 +4,8 @@ import { authConfig } from "@/lib/auth";
 import { getClientQuotes } from "@/lib/quote-logic";
 import { getClientIdFromUser } from "@/lib/appointments";
 
+export const dynamic = "force-dynamic";
+
 export async function GET() {
   try {
     const session = await getServerSession(authConfig);

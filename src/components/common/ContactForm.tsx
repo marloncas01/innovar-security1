@@ -7,10 +7,15 @@ export default function ContactForm() {
   const [message, setMessage] = useState("");
   const [ready, setReady] = useState(false);
   const [accepted, setAccepted] = useState(false);
+  const [error, setError] = useState("");
   const text = `Hola, soy ${name.trim()}. ${message.trim()}`;
 
   return (
-    <form className="space-y-4 mb-8" onSubmit={(event) => { event.preventDefault(); setReady(true); }}>
+    <form className="space-y-4 mb-8" onSubmit={(event) => {
+      event.preventDefault();
+      if (name.trim().length < 2 || message.trim().length < 10) { setError("Escribe tu nombre y una consulta de al menos 10 caracteres."); setReady(false); return; }
+      setError(""); setReady(true);
+    }}>
       <p className="text-sm text-metal-400">Solicita una cotización sin crear cuenta. Prepararemos tu mensaje para que lo revises y envíes por WhatsApp.</p>
       <div>
         <label htmlFor="contact-name" className="block text-sm text-metal-200 mb-2">Nombre</label>
@@ -24,6 +29,7 @@ export default function ContactForm() {
         <input id="contact-consent" type="checkbox" required checked={accepted} onChange={(event) => { setAccepted(event.target.checked); setReady(false); }} className="mt-1" />
         <label htmlFor="contact-consent">Autorizo el tratamiento de mis datos para responder a esta consulta según la <a href="/privacidad" target="_blank" className="text-accent underline">Política de Privacidad</a>.</label>
       </div>
+      {error && <p role="alert" className="text-sm text-red-400">{error}</p>}
       <button type="submit" className="w-full rounded-lg bg-accent hover:bg-accent-dark text-white font-semibold p-3">Preparar consulta</button>
       {ready && accepted && (
         <div role="status" className="rounded-lg border border-border p-4 space-y-3">

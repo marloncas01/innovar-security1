@@ -24,6 +24,11 @@ export async function POST(request: Request) {
       );
     }
 
+    const emailProvider = getEmailProvider();
+    if (process.env.NODE_ENV === "production" && emailProvider.name === "console") {
+      return NextResponse.json({ message: "La recuperación por correo no está disponible en este momento. Contáctanos por WhatsApp al 304 445 1436 para recibir ayuda." }, { status: 503 });
+    }
+
     const normalizedEmail = email.toLowerCase().trim();
     const user = await prisma.user.findUnique({
       where: { email: normalizedEmail },
@@ -43,12 +48,13 @@ export async function POST(request: Request) {
 
       const resetUrl = `${process.env.NEXTAUTH_URL || "http://localhost:3000"}/recuperar/${token}`;
 
-      const emailProvider = getEmailProvider();
-      await emailProvider.send(
+      const sent = await emailProvider.send(
         normalizedEmail,
         "Recuperación de contraseña - Innovar Security",
         `<p>Has solicitado restablecer tu contraseña.</p><p>Tu enlace: ${resetUrl}</p><p>Este enlace expira en 1 hora.</p>`
       );
+
+      if (!sent.success) throw new Error("No se pudo enviar el correo de recuperación");
 
       if (process.env.NODE_ENV === "development") {
         console.log(`[DEV] Password reset token for ${normalizedEmail}: ${token}`);
@@ -62,8 +68,8 @@ export async function POST(request: Request) {
   } catch (error) {
     console.error("Forgot password error:", error);
     return NextResponse.json(
-      { message: "Si el correo está registrado, recibirás un enlace de recuperación." },
-      { status: 200 }
+      { message: "No pudimos procesar tu solicitud. Inténtalo más tarde o contáctanos por WhatsApp al 304 445 1436." },
+      { status: 503 }
     );
   }
 }

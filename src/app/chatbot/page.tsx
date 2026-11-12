@@ -71,7 +71,8 @@ export default function ChatbotPage() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    const container = messagesEndRef.current?.parentElement;
+    container?.scrollTo({ top: container.scrollHeight, behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
   };
 
   useEffect(() => {
@@ -82,8 +83,8 @@ export default function ChatbotPage() {
     async function fetchMessages() {
       try {
         const [chatRes, faqRes] = await Promise.allSettled([
-          fetch("/api/chatbot"),
-          fetch("/api/faq"),
+          fetch("/api/chatbot", { signal: AbortSignal.timeout(8000) }),
+          fetch("/api/faq", { signal: AbortSignal.timeout(8000) }),
         ]);
 
         const allItems: FAQItem[] = [];

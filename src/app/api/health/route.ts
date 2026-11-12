@@ -1,10 +1,12 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 
+export const dynamic = "force-dynamic";
+
 export async function GET() {
   try {
     // Check database connectivity
-    await prisma.$queryRaw`SELECT 1`;
+    await prisma.$transaction([prisma.user.count(), prisma.service.count()]);
     
     return NextResponse.json({
       status: "ok",

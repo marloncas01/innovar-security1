@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { signUpSchema } from "@/lib/validators";
 import { Button, Input } from "@/components/ui";
 
 function EyeIcon({ visible }: { visible: boolean }) {
@@ -50,6 +51,8 @@ function PasswordInput({
           value={value}
           onChange={onChange}
           required
+          minLength={6}
+          maxLength={72}
           autoComplete={autoComplete}
           className={`w-full h-10 px-3 pr-10 bg-metal-900 border rounded-lg text-white placeholder-metal-500 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-0 ${
             error
@@ -87,13 +90,10 @@ export default function RegisterPage() {
 
   const validate = () => {
     const newErrors: Record<string, string> = {};
-    if (!form.name.trim()) newErrors.name = "El nombre es requerido";
-    if (!form.email.trim()) newErrors.email = "El email es requerido";
-    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) newErrors.email = "Email inválido";
-    if (!form.phone.trim()) newErrors.phone = "El teléfono es requerido";
-    else if (form.phone.length < 7) newErrors.phone = "Teléfono inválido";
-    if (!form.password) newErrors.password = "La contraseña es requerida";
-    else if (form.password.length < 6) newErrors.password = "Mínimo 6 caracteres";
+    const parsed = signUpSchema.safeParse(form);
+    if (!parsed.success) {
+      for (const issue of parsed.error.issues) newErrors[String(issue.path[0])] = issue.message;
+    }
     if (form.password !== form.confirmPassword) newErrors.confirmPassword = "Las contraseñas no coinciden";
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -239,6 +239,8 @@ export default function RegisterPage() {
 
             <form onSubmit={handleSubmit} className="space-y-4">
               <Input
+                autoComplete="name"
+                maxLength={100}
                 label="Nombre completo"
                 placeholder="Tu nombre"
                 value={form.name}
@@ -247,6 +249,8 @@ export default function RegisterPage() {
                 required
               />
               <Input
+                autoComplete="email"
+                maxLength={254}
                 label="Email"
                 type="email"
                 placeholder="tu@email.com"
@@ -256,6 +260,8 @@ export default function RegisterPage() {
                 required
               />
               <Input
+                autoComplete="tel"
+                maxLength={25}
                 label="Teléfono"
                 type="tel"
                 placeholder="300 123 4567"

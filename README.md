@@ -151,3 +151,14 @@ npx tsx prisma/backup.ts
 Propietario: Yeison Fabian Rodriguez Rios
 Teléfono: 304 4451436
 Ubicación: Fómeque, Cundinamarca, Colombia
+
+
+## Publicación en Vercel
+
+La producción usa Prisma Postgres. La integración configura `DATABASE_URL` (conexión directa) y `DATABASE_URL_POOLED` (tráfico de la aplicación). No copiar sus valores al repositorio.
+
+`npm run build` genera el cliente adecuado sin modificar `prisma/schema.prisma`, que sigue disponible para SQLite local. En Vercel sincroniza el esquema PostgreSQL sin aceptar pérdida de datos e inicializa únicamente catálogo, FAQ, zona Fómeque y configuración pública. El marcador `public_setup_v1` evita repetir la inicialización. No crea usuarios administradores ni horarios, ni habilita cobros. Esos datos los debe configurar el propietario.
+
+Pruebas: `npx tsx --test tests/public-improvements.test.ts`, `npm run lint`, `npx tsc --noEmit --incremental false`.
+
+Referencia: [Integración oficial de Prisma Postgres con Vercel](https://www.prisma.io/docs/guides/postgres/vercel).

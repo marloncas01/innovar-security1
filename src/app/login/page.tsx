@@ -4,6 +4,7 @@ import { Suspense, useState } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
+import { safeCallbackPath } from "@/lib/site";
 import { Button, Input } from "@/components/ui";
 
 function EyeIcon({ visible }: { visible: boolean }) {
@@ -52,7 +53,7 @@ function PasswordInput({
           type="button"
           onClick={() => setVisible(!visible)}
           className="absolute right-2 top-1/2 -translate-y-1/2 text-metal-400 hover:text-metal-200 transition-colors p-1"
-          tabIndex={-1}
+          aria-label={visible ? "Ocultar contraseña" : "Mostrar contraseña"}
         >
           <EyeIcon visible={visible} />
         </button>
@@ -64,7 +65,7 @@ function PasswordInput({
 function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get("callbackUrl") || "/";
+  const callbackUrl = safeCallbackPath(searchParams.get("callbackUrl"));
   const registered = searchParams.get("registered");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -78,7 +79,7 @@ function LoginForm() {
 
     try {
       const result = await signIn("credentials", {
-        email,
+        email: email.trim().toLowerCase(),
         password,
         redirect: false,
       });

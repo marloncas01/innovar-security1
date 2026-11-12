@@ -506,7 +506,7 @@ export default function NuevaCitaPage() {
                         <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-2.694-.833-3.464 0L3.34 16.5c-.77.833.192 2.5 1.732 2.5z" />
                       </svg>
                       <p className="text-yellow-300 text-sm">
-                        Este día no es laboral. Selecciona otra fecha.
+                        No hay agenda disponible para este día. <a href="https://wa.me/573044451436" target="_blank" rel="noopener noreferrer" className="underline font-semibold">Coordina tu visita por WhatsApp</a>.
                       </p>
                     </div>
                   ) : availability?.isBlocked ? (
@@ -551,7 +551,7 @@ export default function NuevaCitaPage() {
                         <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-2.694-.833-3.464 0L3.34 16.5c-.77.833.192 2.5 1.732 2.5z" />
                       </svg>
                       <p className="text-yellow-300 text-sm">
-                        No hay horarios disponibles para esta fecha.
+                        No hay horarios disponibles para esta fecha. <a href="https://wa.me/573044451436" target="_blank" rel="noopener noreferrer" className="underline font-semibold">Coordina tu visita por WhatsApp</a>.
                       </p>
                     </div>
                   ) : null}

@@ -57,3 +57,6 @@ backups/
 # Docker
 Dockerfile.production
 docker-compose.prod.yml
+
+# Schema generated for the deployment database
+prisma/schema.build.prisma

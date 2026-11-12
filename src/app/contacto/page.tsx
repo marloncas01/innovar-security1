@@ -4,6 +4,7 @@ import ContactForm from "@/components/common/ContactForm";
 import PublicNavbar from "@/components/layout/PublicNavbar";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "/contacto" },
   title: "Contacto",
   description:
     "Contáctanos para instalar cámaras de seguridad en Fómeque, Cundinamarca. Atención profesional y soporte continuo.",
@@ -12,6 +13,8 @@ export const metadata: Metadata = {
     description:
       "Contáctanos para instalar cámaras de seguridad en Fómeque, Cundinamarca.",
     type: "website",
+    url: "/contacto",
+    images: ["/images/social-preview.png"],
   },
 };
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useSession, signOut } from "next-auth/react";
@@ -16,33 +16,44 @@ const navLinks = [
 export default function PublicNavbar() {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const menuButton = useRef<HTMLButtonElement>(null);
+  useEffect(() => { setMobileOpen(false); }, [pathname]);
+  useEffect(() => {
+    if (!mobileOpen) return;
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape") { setMobileOpen(false); menuButton.current?.focus(); }
+    };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [mobileOpen]);
   const { data: session, status } = useSession();
   const isAuthenticated = status === "authenticated";
   const isAdmin = session?.user?.role === "ADMIN";
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-black/80 backdrop-blur-xl border-b border-white/5">
-      <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <nav aria-label="Navegación principal" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-3 group">
+          <Link href="/" aria-label="Innovar Security, inicio" className="flex items-center gap-3 group">
             <div className="w-9 h-9 bg-accent rounded-lg flex items-center justify-center transition-all group-hover:shadow-glow">
               <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
               </svg>
             </div>
-            <span className="font-bold text-white text-lg tracking-tight hidden sm:block">
+            <span className="font-bold text-white text-base sm:text-lg tracking-tight">
               Innovar <span className="text-accent">Security</span>
             </span>
           </Link>
 
           {/* Desktop nav */}
-          <div className="hidden md:flex items-center gap-1">
+          <div className="hidden lg:flex items-center gap-1">
             {navLinks.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
+                aria-current={pathname === link.href ? "page" : undefined}
                 className={cn(
                   "px-4 py-2 text-sm font-medium rounded-lg transition-all",
                   pathname === link.href
@@ -56,7 +67,7 @@ export default function PublicNavbar() {
           </div>
 
           {/* Desktop CTA */}
-          <div className="hidden md:flex items-center gap-3">
+          <div className="hidden lg:flex items-center gap-3">
             {isAuthenticated ? (
               <>
                 {isAdmin ? (
@@ -109,8 +120,11 @@ export default function PublicNavbar() {
 
           {/* Mobile menu button */}
           <button
+            ref={menuButton}
+            aria-expanded={mobileOpen}
+            aria-controls="public-mobile-menu"
             onClick={() => setMobileOpen(!mobileOpen)}
-            className="md:hidden p-2 text-metal-400 hover:text-white transition-colors"
+            className="lg:hidden p-2 text-metal-400 hover:text-white transition-colors"
             aria-label={mobileOpen ? "Cerrar menú" : "Abrir menú"}
           >
             <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -125,12 +139,13 @@ export default function PublicNavbar() {
 
         {/* Mobile nav */}
         {mobileOpen && (
-          <div className="md:hidden py-4 border-t border-white/5 animate-slide-down">
+          <div id="public-mobile-menu" className="lg:hidden py-4 border-t border-white/5 animate-slide-down max-h-[calc(100dvh-4rem)] overflow-y-auto">
             <div className="flex flex-col gap-1">
               {navLinks.map((link) => (
                 <Link
                   key={link.href}
                   href={link.href}
+                aria-current={pathname === link.href ? "page" : undefined}
                   onClick={() => setMobileOpen(false)}
                   className={cn(
                     "px-4 py-3 text-sm font-medium rounded-lg transition-colors",

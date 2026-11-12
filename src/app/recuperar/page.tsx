@@ -8,21 +8,28 @@ export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [error, setError] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
+    setError("");
 
     try {
-      await fetch("/api/auth/forgot-password", {
+      const response = await fetch("/api/auth/forgot-password", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
+        body: JSON.stringify({ email: email.trim().toLowerCase() }),
       });
-    } catch {
-      // Ignore errors - always show success
-    } finally {
+      if (!response.ok) {
+        const data = await response.json();
+        setError(data.message || "No pudimos procesar tu solicitud. Inténtalo más tarde.");
+        return;
+      }
       setSubmitted(true);
+    } catch {
+      setError("No pudimos conectar. Revisa tu conexión e inténtalo de nuevo.");
+    } finally {
       setLoading(false);
     }
   };
@@ -94,6 +101,7 @@ export default function ForgotPasswordPage() {
               Ingresa tu email y te enviaremos un enlace para restablecer tu contraseña
             </p>
 
+            {error && <div role="alert" className="mb-4 rounded-lg border border-red-400/30 p-4 text-sm text-red-300"><p>{error}</p><a className="inline-block mt-3 underline" href="https://wa.me/573044451436" target="_blank" rel="noopener noreferrer">Contactar por WhatsApp</a></div>}
             {submitted ? (
               <div className="bg-green-500/10 border border-green-500/20 rounded-lg p-4 mb-4">
                 <p className="text-sm text-green-400">

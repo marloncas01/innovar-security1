@@ -4,6 +4,8 @@ import { authConfig } from "@/lib/auth";
 import { updateAppointmentStatus } from "@/lib/appointments";
 import prisma from "@/lib/prisma";
 
+export const dynamic = "force-dynamic";
+
 export async function GET(
   request: NextRequest,
   { params }: { params: { id: string } }

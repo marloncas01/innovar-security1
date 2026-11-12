@@ -2,6 +2,8 @@ import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/lib/auth-provider";
+import { siteUrl } from "@/lib/site";
+import QuickContact from "@/components/common/QuickContact";
 import CookieBanner from "@/components/common/CookieBanner";
 
 const inter = Inter({
@@ -24,17 +26,17 @@ export const metadata: Metadata = {
     address: false,
     telephone: false,
   },
-  metadataBase: new URL(process.env.NEXTAUTH_URL || "http://localhost:3000"),
+  metadataBase: new URL(siteUrl),
   openGraph: {
     type: "website",
     locale: "es_CO",
-    url: process.env.NEXTAUTH_URL || "http://localhost:3000",
+    url: siteUrl,
     siteName: "Innovar Security",
     title: "Innovar Security - Cámaras de Seguridad Profesionales",
     description: "Protección profesional para tu hogar o negocio. Servicios de instalación y mantenimiento de cámaras de seguridad.",
     images: [
       {
-        url: "/images/og-image.jpg",
+        url: "/images/social-preview.png",
         width: 1200,
         height: 630,
         alt: "Innovar Security - Cámaras de Seguridad",
@@ -45,6 +47,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Innovar Security",
     description: "Protección profesional para tu hogar o negocio.",
+    images: ["/images/social-preview.png"],
   },
   robots: {
     index: true,
@@ -76,6 +79,7 @@ export default function RootLayout({
       <body className="antialiased font-sans bg-black text-white overflow-x-hidden">
         <AuthProvider>
           {children}
+          <QuickContact />
           <CookieBanner />
         </AuthProvider>
       </body>
