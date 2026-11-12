@@ -242,6 +242,9 @@ export default function HomePage() {
               >
                 Ver Servicios
               </Link>
+              <a href="https://wa.me/573044451436?text=Hola%2C%20quisiera%20una%20cotizaci%C3%B3n" target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center px-6 py-4 text-accent font-semibold underline">
+                Cotizar por WhatsApp
+              </a>
             </div>
           </div>
         </div>

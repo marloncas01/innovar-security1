@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
+import { defaultServices, parseStringList } from "@/lib/public-content";
 import PublicNavbar from "@/components/layout/PublicNavbar";
 
 interface Service {
@@ -50,15 +51,23 @@ export default function ServiciosPage() {
   const { data: session } = useSession();
   const [services, setServices] = useState<Service[]>([]);
   const [loading, setLoading] = useState(true);
+  const [catalogUnavailable, setCatalogUnavailable] = useState(false);
 
   useEffect(() => {
     fetch("/api/services")
-      .then((res) => res.json())
-      .then((data) => {
+      .then(async (res) => {
+        if (!res.ok) throw new Error("Catálogo no disponible");
+        const data: unknown = await res.json();
+        if (!Array.isArray(data) || !data.every((item) => item && typeof item.id === "string" && typeof item.name === "string")) {
+          throw new Error("Respuesta de catálogo inválida");
+        }
         setServices(data);
-        setLoading(false);
       })
-      .catch(() => setLoading(false));
+      .catch(() => {
+        setServices(defaultServices);
+        setCatalogUnavailable(true);
+      })
+      .finally(() => setLoading(false));
   }, []);
 
   return (
@@ -80,6 +89,11 @@ export default function ServiciosPage() {
             </p>
           </div>
 
+          {catalogUnavailable && (
+            <p role="status" className="mb-6 text-sm text-[var(--color-text-secondary)]">
+              Mostramos nuestros servicios generales. Consulta precios y disponibilidad por <a href="https://wa.me/573044451436" target="_blank" rel="noopener noreferrer" className="text-accent underline">WhatsApp</a>.
+            </p>
+          )}
           {loading ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               <SkeletonCard />
@@ -95,24 +109,14 @@ export default function ServiciosPage() {
                 Los servicios estarán disponibles pronto.
               </p>
               <p className="text-[var(--color-text-muted)] text-sm mt-2">
-                Contacta al administrador para más información.
+                Escríbenos al 304 445 1436 para consultar disponibilidad.
               </p>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {services.map((service) => {
-                let features: string[] = [];
-                let exclusions: string[] = [];
-                try {
-                  features = JSON.parse(service.features);
-                } catch {
-                  features = [];
-                }
-                try {
-                  exclusions = JSON.parse(service.exclusions);
-                } catch {
-                  exclusions = [];
-                }
+                const features = parseStringList(service.features);
+                const exclusions = parseStringList(service.exclusions);
 
                 return (
                   <div

@@ -109,7 +109,7 @@ export default function SolicitarPage() {
               <div>
                 <h3 className="text-lg font-semibold text-white mb-2">Comienza ahora</h3>
                 <p className="text-metal-400 text-sm mb-6 max-w-md mx-auto">
-                  Crea tu cuenta para agendar y hacer seguimiento a tus citas e instalaciones.
+                  Crea tu cuenta para agendar y hacer seguimiento a tus citas e instalaciones. También puedes solicitar una cotización por WhatsApp sin registrarte.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
                   <Link
@@ -118,6 +118,7 @@ export default function SolicitarPage() {
                   >
                     Crear Cuenta y Solicitar
                   </Link>
+                  <a href="https://wa.me/573044451436?text=Hola%2C%20quiero%20solicitar%20una%20visita%20t%C3%A9cnica" target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center px-6 py-3.5 text-accent underline font-semibold rounded-xl text-sm">Solicitar por WhatsApp sin cuenta</a>
                   <Link
                     href="/login"
                     className="inline-flex items-center justify-center px-8 py-3.5 border border-metal-700 text-metal-300 hover:border-accent hover:text-white font-semibold rounded-xl transition-all text-sm"

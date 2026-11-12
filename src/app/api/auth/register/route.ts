@@ -18,6 +18,10 @@ export async function POST(request: Request) {
     const body = await request.json();
     const { name, email, phone, password } = body;
 
+    if (body.acceptedTerms !== true) {
+      return NextResponse.json({ error: "Debes aceptar los términos y autorizar el tratamiento de tus datos" }, { status: 400 });
+    }
+
     // Validaciones
     if (!name || !email || !phone || !password) {
       return NextResponse.json(

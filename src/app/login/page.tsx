@@ -99,7 +99,7 @@ function LoginForm() {
   return (
     <div className="bg-surface border border-border rounded-xl p-8 shadow-inner-glow">
       <h2 className="text-2xl font-bold text-white mb-1">Iniciar Sesión</h2>
-      <p className="text-metal-400 text-sm mb-6">Accede a tu panel de administración</p>
+      <p className="text-metal-400 text-sm mb-6">Accede a tu cuenta para gestionar tus servicios</p>
 
       {registered && (
         <div className="bg-green-500/10 border border-green-500/20 rounded-lg p-3 mb-4">

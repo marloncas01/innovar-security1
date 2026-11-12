@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
+import { defaultFaqs } from "@/lib/public-content";
 import PublicNavbar from "@/components/layout/PublicNavbar";
 
 interface DBMessage {
@@ -21,37 +22,27 @@ interface FAQItem {
 }
 
 function getAnswer(input: string, faqItems: FAQItem[]): string {
-  const normalized = input.toLowerCase().trim().replace(/[¿?¡!.,]/g, "");
-
-  // 1. Exact or partial match on question
+  const normalize = (value: string) => value.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[¿?¡!.,]/g, "").trim();
+  const normalized = normalize(input);
+  if (!normalized) return "Escribe tu consulta o selecciona una pregunta sugerida.";
   for (const item of faqItems) {
-    const normalizedQuestion = item.question.toLowerCase().replace(/[¿?¡!.,]/g, "").trim();
-    if (normalized.includes(normalizedQuestion) || normalizedQuestion.includes(normalized)) {
-      return item.answer;
-    }
+    if (normalize(item.question) === normalized) return item.answer;
   }
-
-  // 2. Keyword matching
-  for (const item of faqItems) {
-    const questionWords = item.question
-      .toLowerCase()
-      .replace(/[¿?¡!.,]/g, "")
-      .split(/\s+/)
-      .filter((w) => w.length > 3);
-
-    for (const word of questionWords) {
-      if (normalized.includes(word)) {
-        return item.answer;
-      }
-    }
-  }
+  const words = new Set(normalized.split(/\s+/));
+  const matches = faqItems.map((item) => ({
+    item,
+    score: normalize(item.question).split(/\s+/).filter((word) => word.length > 3 && words.has(word)).length,
+  })).sort((a, b) => b.score - a.score);
+  if (matches[0]?.score > 0) return matches[0].item.answer;
 
   // 3. Fallback keywords
+  if (/servicio|ofrec|instala|manten|camara/.test(normalized)) return defaultFaqs[0].answer;
+  if (/cita|agend|registr/.test(normalized)) return defaultFaqs[2].answer;
   if (normalized.includes("precio") || normalized.includes("costo") || normalized.includes("cuanto") || normalized.includes("valor")) {
     return "Los costos dependen del tipo de servicio, número de cámaras y condiciones del lugar. Las visitas técnicas y cotizaciones permiten darte un presupuesto exacto y sin sorpresas.";
   }
   if (normalized.includes("horario") || normalized.includes("dias") || normalized.includes("hora") || normalized.includes("cuando")) {
-    return "Atendemos de Lunes a Viernes de 8:00 AM a 12:00 PM y de 2:00 PM a 6:00 PM. Puedes agendar tu cita en los horarios disponibles directamente desde la web.";
+    return "Atendemos de lunes a viernes de 8:00 AM a 6:00 PM. Puedes agendar tu cita en los horarios disponibles directamente desde la web.";
   }
   if (normalized.includes("contacto") || normalized.includes("telefono") || normalized.includes("whatsapp") || normalized.includes("celular")) {
     return "Puedes llamarnos o escribirnos por WhatsApp al 304 445 1436. Estamos ubicados en Fómeque, Cundinamarca.";
@@ -74,8 +65,8 @@ export default function ChatbotPage() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [isOpen, setIsOpen] = useState(false);
-  const [faqItems, setFaqItems] = useState<FAQItem[]>([]);
-  const [quickQuestions, setQuickQuestions] = useState<string[]>([]);
+  const [faqItems, setFaqItems] = useState<FAQItem[]>(defaultFaqs);
+  const [quickQuestions, setQuickQuestions] = useState<string[]>(defaultFaqs.map((item) => item.question));
   const [loading, setLoading] = useState(true);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -98,9 +89,10 @@ export default function ChatbotPage() {
         const allItems: FAQItem[] = [];
 
         if (chatRes.status === "fulfilled" && chatRes.value.ok) {
-          const data: DBMessage[] = await chatRes.value.json();
+          const response: unknown = await chatRes.value.json();
+          const data: DBMessage[] = Array.isArray(response) ? response : [];
           const fromChat = data
-            .filter((m) => m.question && m.answer && m.question.trim().length > 0)
+            .filter((m) => m && typeof m.question === "string" && typeof m.answer === "string" && m.question.trim().length > 0)
             .map((m) => ({ id: m.id, question: m.question!, answer: m.answer! }));
           allItems.push(...fromChat);
         }
@@ -108,7 +100,7 @@ export default function ChatbotPage() {
         if (faqRes.status === "fulfilled" && faqRes.value.ok) {
           const faqsData = await faqRes.value.json();
           if (Array.isArray(faqsData)) {
-            const fromFaq = faqsData.map((f: any) => ({
+            const fromFaq = faqsData.filter((f) => f && typeof f.question === "string" && typeof f.answer === "string").map((f: FAQItem) => ({
               id: f.id,
               question: f.question,
               answer: f.answer,
@@ -119,7 +111,7 @@ export default function ChatbotPage() {
 
         // Deduplicate
         const seen = new Set<string>();
-        const unique = allItems.filter((item) => {
+        const unique = [...allItems, ...defaultFaqs].filter((item) => {
           const clean = item.question.toLowerCase().trim().replace(/[¿?]/g, "");
           if (seen.has(clean)) return false;
           seen.add(clean);
@@ -234,7 +226,7 @@ export default function ChatbotPage() {
                   <div className="absolute inset-0 w-3 h-3 bg-emerald-500 rounded-full animate-ping opacity-75" />
                 </div>
                 <div>
-                  <span className="text-white font-semibold text-sm">Chat en Vivo</span>
+                  <span className="text-white font-semibold text-sm">Asistente automático</span>
                   <span className="text-metal-500 text-xs block">Respuestas automáticas instantáneas</span>
                 </div>
               </div>

@@ -61,7 +61,7 @@ function PasswordInput({
           type="button"
           onClick={() => setVisible(!visible)}
           className="absolute right-2 top-1/2 -translate-y-1/2 text-metal-400 hover:text-metal-200 transition-colors p-1"
-          tabIndex={-1}
+          aria-label={visible ? "Ocultar contraseña" : "Mostrar contraseña"}
         >
           <EyeIcon visible={visible} />
         </button>
@@ -82,6 +82,7 @@ export default function RegisterPage() {
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [serverError, setServerError] = useState("");
 
   const validate = () => {
@@ -102,6 +103,7 @@ export default function RegisterPage() {
     e.preventDefault();
     setServerError("");
     if (!validate()) return;
+    if (!acceptedTerms) { setServerError("Debes aceptar los términos y autorizar el tratamiento de tus datos para crear tu cuenta."); return; }
 
     setLoading(true);
     try {
@@ -113,6 +115,7 @@ export default function RegisterPage() {
           email: form.email,
           phone: form.phone,
           password: form.password,
+          acceptedTerms,
         }),
       });
 
@@ -280,6 +283,10 @@ export default function RegisterPage() {
                 autoComplete="new-password"
               />
 
+              <div className="flex items-start gap-3 text-sm text-metal-300">
+                <input id="acceptedTerms" type="checkbox" required checked={acceptedTerms} onChange={(e) => setAcceptedTerms(e.target.checked)} className="mt-1 accent-blue-600" />
+                <label htmlFor="acceptedTerms">Acepto los <Link href="/terminos" target="_blank" className="text-accent underline">Términos y Condiciones</Link> y autorizo el tratamiento de mis datos según la <Link href="/privacidad" target="_blank" className="text-accent underline">Política de Privacidad</Link>.</label>
+              </div>
               <Button type="submit" className="w-full" size="lg" loading={loading}>
                 Crear Cuenta
               </Button>

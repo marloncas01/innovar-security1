@@ -1,9 +1,10 @@
 import Link from "next/link";
 import { Metadata } from "next";
+import ContactForm from "@/components/common/ContactForm";
 import PublicNavbar from "@/components/layout/PublicNavbar";
 
 export const metadata: Metadata = {
-  title: "Contacto | Innovar Security",
+  title: "Contacto",
   description:
     "Contáctanos para instalar cámaras de seguridad en Fómeque, Cundinamarca. Atención profesional y soporte continuo.",
   openGraph: {
@@ -114,9 +115,10 @@ export default function ContactoPage() {
                 Contáctanos directamente
               </h2>
               <p className="text-sm text-[var(--color-text-secondary)] mb-8">
-                El formulario de contacto estará habilitado próximamente. Mientras tanto, comunícate con nosotros por los siguientes medios:
+                Cuéntanos qué necesitas o utiliza nuestros canales de atención directa.
               </p>
 
+              <ContactForm />
               <div className="space-y-4">
                 <a
                   href="tel:+573044451436"

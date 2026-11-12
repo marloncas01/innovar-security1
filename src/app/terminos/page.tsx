@@ -3,7 +3,7 @@ import { Metadata } from "next";
 import PublicNavbar from "@/components/layout/PublicNavbar";
 
 export const metadata: Metadata = {
-  title: "Términos y Condiciones | Innovar Security",
+  title: "Términos y Condiciones",
   description: "Términos y condiciones de uso de la plataforma Innovar Security y prestación de servicios de seguridad electrónica.",
 };
 
