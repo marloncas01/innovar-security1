@@ -26,6 +26,7 @@ export default function SolicitarPage() {
             </p>
           </div>
 
+          <div className="solution-card mb-8"><h2 className="text-xl font-semibold mb-3">Empieza sin crear cuenta</h2><p className="text-slate-300 text-sm mb-5">Si quieres conocer opciones antes de agendar, prepara una solicitud guiada y revísala antes de enviarla.</p><Link href="/cotizar" className="quote-primary">Preparar cotización ↗</Link></div>
           {/* Stepper Card */}
           <div className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl p-6 sm:p-8 mb-8">
             <h2 className="text-xl font-bold text-white mb-6">¿Cómo funciona el proceso?</h2>
@@ -49,7 +50,7 @@ export default function SolicitarPage() {
                 {
                   step: "4",
                   title: "Confirmación y visita",
-                  description: "Confirma tu servicio con pago y nuestro técnico asistirá puntualmente.",
+                  description: "El equipo confirma alcance, disponibilidad y condiciones antes de la visita.",
                 },
               ].map((item) => (
                 <div key={item.step} className="text-center md:text-left flex flex-col items-center md:items-start">

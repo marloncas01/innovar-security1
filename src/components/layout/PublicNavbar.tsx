@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils";
 
 const navLinks = [
   { label: "Servicios", href: "/servicios" },
-  { label: "Cómo Funciona", href: "/solicitar" },
+  { label: "Cotizar", href: "/cotizar" },
   { label: "Asistente Virtual", href: "/chatbot" },
   { label: "Contacto", href: "/contacto" },
   { label: "Confianza", href: "/confianza" },

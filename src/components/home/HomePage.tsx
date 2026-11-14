@@ -226,10 +226,10 @@ export default function HomePage() {
                 {content?.hero?.buttonText || "Solicitar Servicio"}
               </Link>
               <Link
-                href="/servicios"
+                href="/cotizar"
                 className="inline-flex items-center justify-center px-8 py-4 border border-[var(--color-border-light)] text-[var(--color-text-secondary)] hover:text-white hover:border-[var(--color-accent)] font-semibold rounded-lg transition-all duration-200 text-base"
               >
-                Ver Servicios
+                Preparar cotización
               </Link>
               <a href="https://wa.me/573044451436?text=Hola%2C%20quisiera%20una%20cotizaci%C3%B3n" target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center px-6 py-4 text-accent font-semibold underline">
                 Cotizar por WhatsApp
