@@ -73,6 +73,7 @@ export function SecurityVisual() {
         <span>Instalación</span>
         <span>Orientación de uso</span>
       </div>
+      <a href="#galeria" className="inline-flex mt-5 text-sm text-cyan-300 hover:underline gap-2">Explorar imágenes <span aria-hidden="true">↗</span></a>
       <p className="mt-4 text-[11px] text-slate-400">
         Vista ilustrativa · Sin conexión a cámaras en vivo
       </p>

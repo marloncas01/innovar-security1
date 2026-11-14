@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { defaultFaqs } from "@/lib/public-content";
+import VisualGallery from "@/components/home/VisualGallery";
 import SecurityExperience, { SecurityVisual } from "@/components/home/SecurityExperience";
 import PublicNavbar from "@/components/layout/PublicNavbar";
 
@@ -239,6 +240,7 @@ export default function HomePage() {
         </div>
       </section>
 
+      <VisualGallery />
       <SecurityExperience />
       {/* About */}
       {content?.about && (

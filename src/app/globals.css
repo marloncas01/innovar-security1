@@ -249,3 +249,30 @@ select:-webkit-autofill:focus {
 .legal-input { display:block; width:100%; background:#0b1424; border:1px solid #475569; border-radius:10px; color:#f8fafc; padding:12px; margin-top:7px; }
 :where(a,button,input,select,textarea):focus-visible { outline:2px solid #67e8f9; outline-offset:4px; }
 @media(max-width:640px) { .innovar-hero { min-height:auto; } .security-visual { padding:18px; } .security-scene { height:230px; } .experience-section { padding:64px 0; } .legal-page { padding-top:104px; } }
+
+/* Immersive gallery, native modal and progressive motion. */
+.visual-gallery { padding:96px 0; background:radial-gradient(ellipse at 20% 30%,#10213b,#040914 65%); border-top:1px solid #ffffff0d; }
+.gallery-grid { display:grid; grid-template-columns:1.35fr 1fr; grid-template-rows:280px 280px; gap:20px; }
+.gallery-tile { position:relative; isolation:isolate; overflow:hidden; border-radius:24px; border:1px solid #ffffff1f; background:#10213b; text-align:left; color:white; }
+.gallery-tile-featured { grid-row:span 2; }
+.gallery-image { object-fit:cover; transition:transform .8s cubic-bezier(.2,.65,.3,1),filter .8s; }
+.gallery-shade { position:absolute; inset:0; background:linear-gradient(180deg,#02061718 25%,#02061700 40%,#020617e8 100%); }
+.gallery-category { position:absolute; top:20px; left:20px; padding:7px 12px; border:1px solid #ffffff30; border-radius:999px; font-size:11px; letter-spacing:.1em; background:#061022aa; backdrop-filter:blur(12px); }
+.gallery-expand { position:absolute; right:20px; top:20px; width:36px; height:36px; display:grid; place-items:center; border:1px solid #ffffff55; border-radius:50%; background:#06102299; transition:background .3s,transform .3s; }
+.gallery-caption { position:absolute; bottom:25px; left:25px; right:25px; }
+.gallery-open-label { display:flex; gap:12px; align-items:center; margin-top:12px; font-size:12px; color:#a5f3fc; }
+@media(hover:hover) { .gallery-tile:hover .gallery-image { transform:scale(1.06); filter:saturate(1.12); } .gallery-tile:hover .gallery-expand { background:#155e75; transform:rotate(45deg); } .gallery-tile:hover { border-color:#67e8f9aa; } }
+.gallery-dialog { width:min(1180px,94vw); max-height:90dvh; padding:0; margin:auto; color:#f8fafc; background:#091120; border:1px solid #334155; border-radius:24px; box-shadow:0 30px 120px #000b; overflow:auto; }
+.gallery-dialog::backdrop { background:#020617dc; backdrop-filter:blur(12px); }
+.gallery-dialog[open] { animation:gallery-arrive .25s ease-out; }
+.gallery-toolbar { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:14px 20px; border-bottom:1px solid #ffffff12; position:sticky; top:0; z-index:2; background:#091120f5; }
+.gallery-dialog-grid { display:grid; grid-template-columns:1.7fr 1fr; }
+.gallery-large-image { min-height:480px; position:relative; background:#030711; touch-action:pan-y; }
+.gallery-image-controls { position:absolute; inset-inline:16px; bottom:16px; display:flex; justify-content:space-between; pointer-events:none; }
+.gallery-control { width:44px; height:44px; display:grid; place-items:center; background:#10213be8; border:1px solid #64748b; border-radius:50%; font-size:20px; color:white; pointer-events:auto; }
+.gallery-control:hover { background:#164e63; border-color:#67e8f9; }
+.gallery-detail { padding:32px; align-self:center; }
+.gallery-dot { width:42px; height:36px; border-radius:9px; font-size:11px; border:1px solid #475569; color:#cbd5e1; }
+.gallery-dot-active { background:#164e63; border-color:#67e8f9; color:#ecfeff; }
+@keyframes gallery-arrive { from { opacity:0; transform:translateY(14px) scale(.98); } to {opacity:1;transform:none;} }
+@media(max-width:767px) { .visual-gallery {padding:64px 0;} .gallery-grid {grid-template-columns:1fr;grid-template-rows:auto;gap:16px;} .gallery-tile {aspect-ratio:4/3;} .gallery-tile-featured {grid-row:auto;aspect-ratio:1/1;} .gallery-caption {bottom:22px;left:22px;right:22px;} .gallery-dialog-grid {grid-template-columns:1fr;} .gallery-large-image {min-height:0;aspect-ratio:3/2;} .gallery-detail {padding:24px;} .gallery-dialog {width:96vw;border-radius:18px;} .gallery-toolbar {padding:10px 14px;} }
