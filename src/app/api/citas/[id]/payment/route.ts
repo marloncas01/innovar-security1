@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth";
 import { authConfig } from "@/lib/auth";
 import { createPayment, initiatePayment, checkPaymentStatus } from "@/lib/payment-logic";
 import { getClientIdFromUser } from "@/lib/appointments";
+import { loadPaymentReadiness } from "@/lib/payment-config-server";
 import prisma from "@/lib/prisma";
 
 export async function POST(
@@ -34,11 +35,13 @@ export async function POST(
     const body = await request.json();
     const { description } = body;
 
-    const amount = appointment.service.price ?? 0;
+    const amount = appointment.service.price;
+    const readiness = await loadPaymentReadiness(amount);
+    if (!readiness.ready) return NextResponse.json({ error: readiness.error }, { status: 409 });
 
     const payment = await createPayment({
       appointmentId: params.id,
-      amount,
+      amount: amount!,
       description,
     });
 

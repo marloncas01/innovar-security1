@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { businessNow, clockSchema, dateKeySchema } from "@/lib/scheduling";
 
 export const signUpSchema = z.object({
   name: z.string().trim().min(2, "El nombre debe tener al menos 2 caracteres").max(100),
@@ -32,3 +33,18 @@ export const appointmentSchema = z.object({
 });
 
 export type AppointmentFormData = z.infer<typeof appointmentSchema>;
+
+
+// The client submits a calendar date and a separate time, both in Colombia.
+export const appointmentRequestSchema = z.object({
+  serviceId: z.string().uuid("Selecciona un servicio válido"),
+  scheduledDate: dateKeySchema.refine((date) => date >= businessNow().date, "Selecciona una fecha actual o futura"),
+  startTime: clockSchema, endTime: clockSchema,
+  locationAddress: z.string().trim().min(5, "Escribe una dirección completa").max(300),
+  locationMunicipality: z.string().trim().min(2, "Escribe el municipio").max(100),
+  locationReference: z.string().max(1000).optional(), locationNotes: z.string().max(1000).optional(),
+  conditionNotes: z.string().max(2000).optional(),
+  hasHeightWork: z.boolean().optional(), hasElectricRisk: z.boolean().optional(),
+  hasComplicatedAccess: z.boolean().optional(), hasSpecialConditions: z.boolean().optional(),
+  specialConditionsDescription: z.string().max(2000).optional(),
+}).refine((input) => input.endTime > input.startTime, { message: "La hora final debe ser posterior a la inicial" });

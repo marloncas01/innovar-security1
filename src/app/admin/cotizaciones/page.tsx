@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import AdminLayout from "@/components/layout/AdminLayout";
 import StatusBadge from "@/components/ui/StatusBadge";
 
 interface Quote {
@@ -57,7 +56,7 @@ export default function AdminCotizacionesPage() {
     }).format(amount);
 
   return (
-    <AdminLayout>
+    <>
       <div>
         <div className="mb-6">
           <h1 className="text-2xl font-bold text-white">Cotizaciones</h1>
@@ -216,6 +215,6 @@ export default function AdminCotizacionesPage() {
           </>
         )}
       </div>
-    </AdminLayout>
+    </>
   );
 }

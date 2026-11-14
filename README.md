@@ -162,3 +162,10 @@ La producción usa Prisma Postgres. La integración configura `DATABASE_URL` (co
 Pruebas: `npx tsx --test tests/public-improvements.test.ts`, `npm run lint`, `npx tsc --noEmit --incremental false`.
 
 Referencia: [Integración oficial de Prisma Postgres con Vercel](https://www.prisma.io/docs/guides/postgres/vercel).
+
+
+### Agenda del negocio
+
+El administrador puede definir sus franjas semanales en `/admin/horarios`. No hay horarios publicados por defecto. Las franjas se validan para impedir cruces y solo cambian al guardar. Las citas ya creadas mantienen su fecha y hora. La disponibilidad utiliza la duración del servicio, los bloqueos y la hora de Colombia. Las reservas y las reprogramaciones se comprueban dentro de transacciones serializables en producción.
+
+Pruebas de agenda: `npx tsx --test tests/scheduling.test.ts`.

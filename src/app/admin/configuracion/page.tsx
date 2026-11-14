@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import AdminLayout from "@/components/layout/AdminLayout";
 
 interface Setting {
   key: string;
@@ -47,6 +46,8 @@ export default function AdminConfiguracionPage() {
   const [saving, setSaving] = useState(false);
   const [editedValues, setEditedValues] = useState<Record<string, string>>({});
   const [hasChanges, setHasChanges] = useState(false);
+  const [error, setError] = useState("");
+  const [saved, setSaved] = useState(false);
 
   useEffect(() => {
     fetchSettings();
@@ -54,22 +55,26 @@ export default function AdminConfiguracionPage() {
 
   const fetchSettings = () => {
     setLoading(true);
+    setError("");
     fetch("/api/admin/settings")
-      .then((res) => res.json())
+      .then(async (res) => { if (!res.ok) throw new Error(); return res.json(); })
       .then((data) => {
         setGrouped(data || {});
         setLoading(false);
       })
-      .catch(() => setLoading(false));
+      .catch(() => { setError("No pudimos cargar la configuración. Recarga la página para reintentar."); setLoading(false); });
   };
 
   const handleChange = (key: string, value: string) => {
     setEditedValues((prev) => ({ ...prev, [key]: value }));
     setHasChanges(true);
+    setSaved(false);
   };
 
   const saveAll = async () => {
     setSaving(true);
+    setError("");
+    setSaved(false);
     const settings = Object.entries(editedValues).map(([key, value]) => ({ key, value }));
 
     try {
@@ -81,9 +86,13 @@ export default function AdminConfiguracionPage() {
       if (res.ok) {
         setEditedValues({});
         setHasChanges(false);
+        setSaved(true);
         fetchSettings();
+      } else {
+        setError("No pudimos guardar los cambios. Tus ediciones se conservaron para reintentar.");
       }
     } catch (error) {
+      setError("Error de conexión. Tus ediciones se conservaron para reintentar.");
       console.error("Error saving settings:", error);
     } finally {
       setSaving(false);
@@ -91,7 +100,7 @@ export default function AdminConfiguracionPage() {
   };
 
   return (
-    <AdminLayout>
+    <>
       <div>
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 gap-4">
           <div>
@@ -114,6 +123,8 @@ export default function AdminConfiguracionPage() {
           )}
         </div>
 
+        {error && <p role="alert" className="mb-4 rounded-lg border border-red-500/30 p-4 text-red-300">{error}</p>}
+        {saved && <p role="status" className="mb-4 text-emerald-300">Configuración guardada.</p>}
         {loading ? (
           <div className="text-center py-12">
             <div className="w-8 h-8 border-2 border-accent border-t-transparent rounded-full animate-spin mx-auto" />
@@ -155,6 +166,6 @@ export default function AdminConfiguracionPage() {
           </div>
         )}
       </div>
-    </AdminLayout>
+    </>
   );
 }

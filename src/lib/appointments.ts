@@ -1,3 +1,4 @@
+import { businessNow, clock, clockSchema, dateKeySchema, minutes } from "@/lib/scheduling";
 import prisma from "@/lib/prisma";
 import { isSlotAvailableAtomic } from "@/lib/availability";
 import { HISTORY_ACTIONS } from "@/lib/constants";
@@ -40,6 +41,9 @@ async function getSettingValue(key: string): Promise<string | null> {
 }
 
 export async function createAppointment(input: CreateAppointmentInput) {
+  if (!dateKeySchema.safeParse(input.scheduledDate).success || input.scheduledDate < businessNow().date || !clockSchema.safeParse(input.startTime).success || !clockSchema.safeParse(input.endTime).success) {
+    throw new Error("Fecha u horario no válido");
+  }
   const service = await prisma.service.findUnique({
     where: { id: input.serviceId },
   });
@@ -47,6 +51,7 @@ export async function createAppointment(input: CreateAppointmentInput) {
     throw new Error("Servicio no válido o inactivo");
   }
 
+  if (minutes(input.endTime) - minutes(input.startTime) !== (service.duration ?? 60)) throw new Error("La duración no corresponde al servicio seleccionado");
   const dateStart = new Date(input.scheduledDate + "T00:00:00Z");
   const dateEnd = new Date(input.scheduledDate + "T23:59:59Z");
 
@@ -54,7 +59,8 @@ export async function createAppointment(input: CreateAppointmentInput) {
     const slotAvailable = await isSlotAvailableAtomic(
       input.scheduledDate,
       input.startTime,
-      tx
+      tx,
+      input.endTime
     );
     if (!slotAvailable) {
       throw new Error("El horario seleccionado ya no está disponible");
@@ -91,7 +97,7 @@ export async function createAppointment(input: CreateAppointmentInput) {
     );
 
     return appointment;
-  });
+  }, { isolationLevel: "Serializable" });
 
   try {
     const dateStr = input.scheduledDate;
@@ -381,12 +387,15 @@ export async function respondReprogram(
     }
 
     const newDateStr = reprogramRequest.newDate.toISOString().split("T")[0];
+    const newEndTime = clock(minutes(reprogramRequest.newTime) + minutes(appointment.endTime) - minutes(appointment.startTime));
 
     const result = await prisma.$transaction(async (tx) => {
       const slotAvailable = await isSlotAvailableAtomic(
         newDateStr,
         reprogramRequest.newTime!,
-        tx
+        tx,
+        newEndTime,
+        appointment.id
       );
       if (!slotAvailable) {
         throw new Error("El nuevo horario ya no está disponible");
@@ -407,6 +416,7 @@ export async function respondReprogram(
           status: "REPROGRAMMED",
           scheduledDate: reprogramRequest.newDate!,
           startTime: reprogramRequest.newTime!,
+          endTime: newEndTime,
           adminNotes: adminNotes || null,
         },
       });
@@ -420,7 +430,7 @@ export async function respondReprogram(
       );
 
       return tx.appointment.findUnique({ where: { id: appointment.id } });
-    });
+    }, { isolationLevel: "Serializable" });
 
     try {
       const dateStr = reprogramRequest.newDate?.toISOString().split("T")[0] || "";

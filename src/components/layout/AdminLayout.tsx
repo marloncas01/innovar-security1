@@ -1,10 +1,17 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Sidebar from "./Sidebar";
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const menuButton = useRef<HTMLButtonElement>(null);
+  useEffect(() => {
+    if (!sidebarOpen) return;
+    const close = (event: KeyboardEvent) => { if (event.key === "Escape") { setSidebarOpen(false); menuButton.current?.focus(); } };
+    document.addEventListener("keydown", close);
+    return () => document.removeEventListener("keydown", close);
+  }, [sidebarOpen]);
 
   return (
     <div className="min-h-screen bg-metal-950">
@@ -15,6 +22,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         {/* Top bar mobile */}
         <header className="h-16 bg-metal-900 border-b border-metal-700 flex items-center px-4 lg:hidden sticky top-0 z-30">
           <button
+            ref={menuButton}
+            aria-label="Abrir menú de administración"
+            aria-expanded={sidebarOpen}
             onClick={() => setSidebarOpen(true)}
             className="text-metal-400 hover:text-white p-2"
           >

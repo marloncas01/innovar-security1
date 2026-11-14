@@ -14,6 +14,7 @@ export async function GET() {
     }
 
     const settings = await prisma.setting.findMany({
+      where: { key: { not: "public_setup_v1" } },
       orderBy: { key: "asc" },
     });
 
@@ -45,16 +46,16 @@ export async function PUT(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { settings } = body;
+    const settings = body?.settings;
 
-    if (!settings || !Array.isArray(settings)) {
+    if (!Array.isArray(settings) || settings.length > 50 || settings.some((item) => !item || typeof item.key !== "string" || typeof item.value !== "string" || item.key === "public_setup_v1" || item.value.length > 5000)) {
       return NextResponse.json(
         { error: "Settings array is required" },
         { status: 400 }
       );
     }
 
-    const updates = await Promise.all(
+    const updates = await prisma.$transaction(
       settings.map(
         (s: { key: string; value: string }) =>
           prisma.setting.update({
@@ -66,6 +67,7 @@ export async function PUT(request: NextRequest) {
 
     return NextResponse.json(updates);
   } catch (error: any) {
+    if (error instanceof SyntaxError) return NextResponse.json({ error: "Solicitud inválida" }, { status: 400 });
     console.error("Error updating settings:", error);
     if (error.code === "P2025") {
       return NextResponse.json(

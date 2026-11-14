@@ -44,6 +44,7 @@ export async function POST(
 
     return NextResponse.json(result);
   } catch (error: any) {
+    if (error.code === "P2034" || error.message === "El nuevo horario ya no está disponible") return NextResponse.json({ error: "El horario ya no está disponible. Revisa la agenda y vuelve a intentarlo." }, { status: 409 });
     console.error("Error responding to reprogram:", error);
     return NextResponse.json({ error: "Error interno del servidor" }, { status: 500 });
   }

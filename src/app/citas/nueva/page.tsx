@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { businessNow } from "@/lib/scheduling";
 import { Button, Input, Textarea, Select } from "@/components/ui";
 
 interface Service {
@@ -85,29 +86,31 @@ export default function NuevaCitaPage() {
 
   const [availability, setAvailability] = useState<AvailabilityResult | null>(null);
   const [loadingAvailability, setLoadingAvailability] = useState(false);
+  const [availabilityError, setAvailabilityError] = useState("");
 
   useEffect(() => {
-    fetch("/api/services")
-      .then((res) => res.json())
-      .then((data) => {
-        setServices(data);
-        setLoading(false);
-      })
-      .catch(() => setLoading(false));
+    const controller = new AbortController();
+    fetch("/api/services", { signal: controller.signal })
+      .then(async (res) => { if (!res.ok) throw new Error(); return res.json(); })
+      .then((data) => { if (!Array.isArray(data)) throw new Error(); setServices(data); })
+      .catch(() => { if (!controller.signal.aborted) { setServices([]); setError("No pudimos cargar los servicios. Recarga la página o contáctanos por WhatsApp."); } })
+      .finally(() => { if (!controller.signal.aborted) setLoading(false); });
+    return () => controller.abort();
   }, []);
 
   useEffect(() => {
-    if (form.scheduledDate) {
-      setLoadingAvailability(true);
-      fetch(`/api/schedules/availability?date=${form.scheduledDate}`)
-        .then((res) => res.json())
-        .then((data) => {
-          setAvailability(data);
-          setLoadingAvailability(false);
-        })
-        .catch(() => setLoadingAvailability(false));
-    }
-  }, [form.scheduledDate]);
+    setAvailability(null); setAvailabilityError("");
+    setForm((current) => ({ ...current, startTime: "", endTime: "" }));
+    if (!form.scheduledDate || !form.serviceId) { setLoadingAvailability(false); return; }
+    const controller = new AbortController();
+    setLoadingAvailability(true);
+    fetch(`/api/schedules/availability?date=${form.scheduledDate}&serviceId=${encodeURIComponent(form.serviceId)}`, { signal: controller.signal })
+      .then(async (response) => { const data = await response.json(); if (!response.ok || !Array.isArray(data.slots)) throw new Error(data.error || "No pudimos consultar los horarios"); return data; })
+      .then((data) => { if (!controller.signal.aborted) setAvailability(data); })
+      .catch((cause) => { if (!controller.signal.aborted) setAvailabilityError(cause instanceof Error ? cause.message : "Error de conexión"); })
+      .finally(() => { if (!controller.signal.aborted) setLoadingAvailability(false); });
+    return () => controller.abort();
+  }, [form.scheduledDate, form.serviceId]);
 
   const selectedService = services.find((s) => s.id === form.serviceId);
 
@@ -127,6 +130,7 @@ export default function NuevaCitaPage() {
       const data = await res.json();
       if (!res.ok) {
         setError(data.error || "Error al crear la cita");
+        if (res.status === 409) { setForm((current) => ({ ...current, startTime: "", endTime: "", scheduledDate: "" })); setStep(3); }
         setSubmitting(false);
         return;
       }
@@ -237,7 +241,7 @@ export default function NuevaCitaPage() {
                   </svg>
                 </div>
                 <p className="text-metal-400">No hay servicios disponibles actualmente.</p>
-                <p className="text-metal-600 text-sm mt-1">Contacta al administrador para más información.</p>
+                <a href="https://wa.me/573044451436" target="_blank" rel="noopener noreferrer" className="inline-block mt-3 text-accent underline">Solicitar ayuda por WhatsApp</a>
               </div>
             ) : (
               <div className="grid grid-cols-1 gap-3">
@@ -488,11 +492,11 @@ export default function NuevaCitaPage() {
                 onChange={(e) =>
                   setForm({ ...form, scheduledDate: e.target.value, startTime: "", endTime: "" })
                 }
-                min={new Date().toISOString().split("T")[0]}
+                min={businessNow().date}
               />
               {form.scheduledDate && (
                 <div>
-                  {loadingAvailability ? (
+                  {availabilityError ? <p role="alert" className="rounded-xl border border-red-500/30 p-4 text-red-300">{availabilityError}. Selecciona de nuevo la fecha para reintentar.</p> : loadingAvailability ? (
                     <div className="flex flex-col items-center py-8">
                       <div className="relative">
                         <div className="w-8 h-8 border-2 border-metal-700 rounded-full" />
@@ -568,7 +572,7 @@ export default function NuevaCitaPage() {
             </Button>
             <Button
               onClick={() => setStep(4)}
-              disabled={!form.startTime}
+              disabled={!form.startTime || loadingAvailability || !!availabilityError}
               size="lg"
             >
               Siguiente

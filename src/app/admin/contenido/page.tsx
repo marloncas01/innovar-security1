@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import AdminLayout from "@/components/layout/AdminLayout";
 import StatusBadge from "@/components/ui/StatusBadge";
 
 interface ContentSection {
@@ -108,7 +107,7 @@ export default function AdminContenidoPage() {
   };
 
   return (
-    <AdminLayout>
+    <>
       <div>
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 gap-4">
           <div>
@@ -274,6 +273,6 @@ export default function AdminContenidoPage() {
           </div>
         )}
       </div>
-    </AdminLayout>
+    </>
   );
 }

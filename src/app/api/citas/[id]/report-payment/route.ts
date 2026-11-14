@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authConfig } from "@/lib/auth";
+import { loadPaymentReadiness } from "@/lib/payment-config-server";
 import prisma from "@/lib/prisma";
 import { getStorageProvider } from "@/lib/storage";
 
@@ -27,8 +28,13 @@ export async function POST(
       return NextResponse.json({ error: "No autorizado" }, { status: 403 });
     }
 
+    if (appointment.payment?.status === "CONFIRMED") return NextResponse.json({ error: "Este pago ya fue confirmado" }, { status: 409 });
+    const amount = appointment.payment?.amount ?? appointment.service.price;
+    const readiness = await loadPaymentReadiness(amount);
+    if (!readiness.ready || amount === null) return NextResponse.json({ error: readiness.error }, { status: 409 });
     const formData = await request.formData();
     const method = (formData.get("method") as string) || "NEQUI";
+    if (!readiness.methods.some((value) => value === method)) return NextResponse.json({ error: "Selecciona un medio de pago configurado" }, { status: 400 });
     const reference = (formData.get("reference") as string) || "";
     const notes = (formData.get("notes") as string) || "";
     const receiptFile = formData.get("receipt") as File | null;
@@ -43,8 +49,6 @@ export async function POST(
       receiptUrl = uploadResult.url;
     }
 
-    const amount = appointment.service.price ?? 0;
-
     const payment = await prisma.payment.upsert({
       where: { appointmentId: params.id },
       update: {
@@ -56,7 +60,7 @@ export async function POST(
       },
       create: {
         appointmentId: params.id,
-        amount,
+        amount: amount!,
         currency: "COP",
         method,
         reference: reference.trim() || `MANUAL-${Date.now()}`,

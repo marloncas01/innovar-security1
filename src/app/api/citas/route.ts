@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authConfig } from "@/lib/auth";
 import { createAppointment, getClientIdFromUser } from "@/lib/appointments";
+import { appointmentRequestSchema } from "@/lib/validators";
 import prisma from "@/lib/prisma";
 
 export async function POST(request: NextRequest) {
@@ -19,44 +20,13 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const body = await request.json();
+    const parsed = appointmentRequestSchema.safeParse(await request.json());
+    if (!parsed.success) return NextResponse.json({ error: parsed.error.issues[0].message }, { status: 400 });
     const {
-      serviceId,
-      scheduledDate,
-      startTime,
-      endTime,
-      locationAddress,
-      locationMunicipality,
-      locationReference,
-      locationNotes,
-      conditionNotes,
-      hasHeightWork,
-      hasElectricRisk,
-      hasComplicatedAccess,
-      hasSpecialConditions,
-      specialConditionsDescription,
-    } = body;
-
-    if (!serviceId || !scheduledDate || !startTime || !endTime || !locationAddress) {
-      return NextResponse.json(
-        { error: "Campos requeridos: serviceId, scheduledDate, startTime, endTime, locationAddress" },
-        { status: 400 }
-      );
-    }
-
-    if (!/^\d{4}-\d{2}-\d{2}$/.test(scheduledDate)) {
-      return NextResponse.json(
-        { error: "Formato de fecha inválido (YYYY-MM-DD)" },
-        { status: 400 }
-      );
-    }
-
-    if (!/^\d{2}:\d{2}$/.test(startTime) || !/^\d{2}:\d{2}$/.test(endTime)) {
-      return NextResponse.json(
-        { error: "Formato de hora inválido (HH:mm)" },
-        { status: 400 }
-      );
-    }
+      serviceId, scheduledDate, startTime, endTime, locationAddress, locationMunicipality,
+      locationReference, locationNotes, conditionNotes, hasHeightWork, hasElectricRisk,
+      hasComplicatedAccess, hasSpecialConditions, specialConditionsDescription,
+    } = parsed.data;
 
     const appointment = await createAppointment({
       clientId,
@@ -80,11 +50,14 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(appointment, { status: 201 });
   } catch (error: any) {
     console.error("Error creating appointment:", error);
+    if (error instanceof SyntaxError) return NextResponse.json({ error: "Solicitud inválida" }, { status: 400 });
+    if (["Fecha u horario no válido", "La duración no corresponde al servicio seleccionado", "Servicio no válido o inactivo"].includes(error.message)) return NextResponse.json({ error: error.message }, { status: 400 });
+    if (error.code === "P2034") return NextResponse.json({ error: "Ese horario acaba de cambiar. Actualiza la disponibilidad e inténtalo de nuevo." }, { status: 409 });
     if (error.message?.includes("ya no está disponible")) {
       return NextResponse.json({ error: error.message }, { status: 409 });
     }
     return NextResponse.json(
-      { error: error.message || "Error al crear la cita" },
+      { error: "No pudimos crear la cita. Inténtalo de nuevo." },
       { status: 500 }
     );
   }

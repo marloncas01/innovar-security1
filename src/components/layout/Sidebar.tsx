@@ -22,7 +22,7 @@ const navSections: NavSection[] = [
     title: "PRINCIPAL",
     items: [
       {
-        label: "Dashboard",
+        label: "Resumen",
         href: "/admin/dashboard",
         icon: (
           <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -76,6 +76,11 @@ const navSections: NavSection[] = [
   {
     title: "OPERACIÓN",
     items: [
+      {
+        label: "Horarios",
+        href: "/admin/horarios",
+        icon: <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><circle cx="12" cy="12" r="9" strokeWidth="1.5" /><path d="M12 7v5l3 2" strokeWidth="1.5" strokeLinecap="round" /></svg>,
+      },
       {
         label: "Citas",
         href: "/admin/citas",
@@ -205,7 +210,7 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
         </div>
 
         {/* Navigation */}
-        <nav className="flex-1 overflow-y-auto py-4 px-3">
+        <nav aria-label="Menú de administración" className="flex-1 overflow-y-auto py-4 px-3">
           {navSections.map((section) => (
             <div key={section.title} className="mb-5">
               <p className="px-3 mb-2 text-[11px] font-semibold tracking-wider text-gray-500 uppercase">
@@ -219,6 +224,7 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
                   <Link
                     key={item.href}
                     href={item.href}
+                    aria-current={isActive ? "page" : undefined}
                     onClick={onClose}
                     className={cn(
                       "flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors mb-0.5",

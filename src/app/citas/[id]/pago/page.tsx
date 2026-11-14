@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
 import Link from "next/link";
+import { getPaymentReadiness } from "@/lib/payment-config";
 import { StatusBadge } from "@/components/ui";
 
 interface Appointment {
@@ -24,6 +25,7 @@ interface Payment {
 }
 
 interface PublicSettings {
+  payment_enabled?: string;
   business_name?: string;
   business_phone?: string;
   payment_nequi_number?: string;
@@ -83,6 +85,8 @@ export default function PagoPage() {
       if (setRes.ok) {
         const setData = await setRes.json();
         setSettings(setData);
+        const methods = getPaymentReadiness(setData, 1).methods;
+        if (methods[0]) setSelectedMethod(methods[0]);
       }
     } catch (err: any) {
       setError(err.message || "Error al cargar los datos");
@@ -160,11 +164,15 @@ export default function PagoPage() {
     );
   }
 
-  const nequiNumber = settings?.payment_nequi_number || "3044451436";
-  const nequiName = settings?.payment_nequi_name || "Innovar Security";
-  const bancolombiaNumber = settings?.payment_bancolombia_number || "Pendiente de configurar";
-  const bancolombiaType = settings?.payment_bancolombia_type || "Ahorros";
-  const bancolombiaName = settings?.payment_bancolombia_name || "Innovar Security";
+  const paymentState = getPaymentReadiness(settings ?? {}, payment?.amount ?? appointment.service?.price);
+  if (!paymentState.ready && payment?.status !== "CONFIRMED") {
+    return <div className="max-w-2xl mx-auto py-12 px-4 space-y-5"><Link href={`/citas/${id}`} className="text-accent underline">Volver a la cita</Link><h1 className="text-2xl font-bold">Información de pago</h1><p role="status" className="rounded-xl border border-border bg-surface p-5 text-metal-300">{paymentState.error}</p><a href="https://wa.me/573044451436" target="_blank" rel="noopener noreferrer" className="inline-block rounded-lg bg-accent px-5 py-3 font-semibold">Consultar por WhatsApp</a></div>;
+  }
+  const nequiNumber = settings?.payment_nequi_number || "";
+  const nequiName = settings?.payment_nequi_name || "";
+  const bancolombiaNumber = settings?.payment_bancolombia_number || "";
+  const bancolombiaType = settings?.payment_bancolombia_type || "";
+  const bancolombiaName = settings?.payment_bancolombia_name || "";
 
   return (
     <div className="min-h-screen bg-black text-white py-10 px-4 sm:px-6 lg:px-8">
@@ -180,8 +188,7 @@ export default function PagoPage() {
         <div>
           <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Pago de Visita Técnica</h1>
           <p className="text-metal-400 text-sm mt-1">
-            Realiza tu transferencia a través de <strong className="text-white">Nequi</strong> o <strong className="text-white">Bancolombia</strong>.
-            Una vez enviado tu reporte, el administrador validará la transacción para confirmar tu cita.
+            {payment?.status === "CONFIRMED" ? "Tu pago ya fue confirmado por el administrador." : "Utiliza uno de los medios de pago habilitados a continuación. El administrador revisará tu reporte antes de confirmar el pago."}
           </p>
         </div>
 
@@ -191,7 +198,7 @@ export default function PagoPage() {
             <p className="text-xs text-metal-400 uppercase font-medium">Servicio</p>
             <p className="text-white font-semibold text-lg">{appointment.service?.name}</p>
             <p className="text-xs text-metal-500 mt-0.5">
-              Fecha programada: {new Date(appointment.scheduledDate).toLocaleDateString("es-CO", { dateStyle: "long" })}
+              Fecha programada: {new Date(appointment.scheduledDate).toLocaleDateString("es-CO", { dateStyle: "long", timeZone: "UTC" })}
             </p>
           </div>
           <div className="sm:text-right">
@@ -208,7 +215,7 @@ export default function PagoPage() {
         {/* Cuentas de Transferencia (Nequi y Bancolombia) */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* Nequi Card */}
-          <div className={`p-5 rounded-xl border transition-all ${
+          <div hidden={!paymentState.methods.includes("NEQUI")} className={`p-5 rounded-xl border transition-all ${
             selectedMethod === "NEQUI"
               ? "bg-[#20002c]/40 border-fuchsia-500/60 shadow-lg shadow-fuchsia-950/40"
               : "bg-metal-900 border-metal-800 opacity-90"
@@ -254,7 +261,7 @@ export default function PagoPage() {
           </div>
 
           {/* Bancolombia Card */}
-          <div className={`p-5 rounded-xl border transition-all ${
+          <div hidden={!paymentState.methods.includes("BANCOLOMBIA")} className={`p-5 rounded-xl border transition-all ${
             selectedMethod === "BANCOLOMBIA"
               ? "bg-[#252000]/40 border-yellow-500/60 shadow-lg shadow-yellow-950/40"
               : "bg-metal-900 border-metal-800 opacity-90"
@@ -358,6 +365,7 @@ export default function PagoPage() {
                 <div className="grid grid-cols-2 gap-3">
                   <button
                     type="button"
+                    hidden={!paymentState.methods.includes("NEQUI")}
                     onClick={() => setSelectedMethod("NEQUI")}
                     className={`p-3 rounded-lg border text-sm font-medium transition-colors ${
                       selectedMethod === "NEQUI"
@@ -369,6 +377,7 @@ export default function PagoPage() {
                   </button>
                   <button
                     type="button"
+                    hidden={!paymentState.methods.includes("BANCOLOMBIA")}
                     onClick={() => setSelectedMethod("BANCOLOMBIA")}
                     className={`p-3 rounded-lg border text-sm font-medium transition-colors ${
                       selectedMethod === "BANCOLOMBIA"

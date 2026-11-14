@@ -7,6 +7,7 @@ interface Appointment {
   id: string;
   status: string;
   scheduledDate: string;
+  startTime: string;
   service: { name: string };
   client: { name: string; phone?: string };
 }
@@ -44,75 +45,19 @@ export default function AdminDashboardPage() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const [citasRes, notifRes, statsRes] = await Promise.all([
-          fetch("/api/admin/citas?limit=100"),
-          fetch("/api/admin/notifications?limit=1"),
-          fetch("/api/admin/dashboard/stats"),
+        const [statsRes, notifRes] = await Promise.all([
+          fetch("/api/admin/dashboard/stats"), fetch("/api/admin/notifications?limit=1"),
         ]);
-
-        if (!citasRes.ok) throw new Error();
-
-        const citasData = await citasRes.json();
-        const appointments: Appointment[] = citasData.appointments || [];
-
-        const pending = appointments.filter(
-          (a) => a.status === "PENDING"
-        ).length;
-        const confirmed = appointments.filter(
-          (a) => a.status === "CONFIRMED"
-        ).length;
-        const total = citasData.pagination?.total ?? appointments.length;
-
-        let unreadNotifications = 0;
-        if (notifRes.ok) {
-          const notifData = await notifRes.json();
-          unreadNotifications = notifData.unreadCount || 0;
-        }
-
-        let totalClients = 0;
-        let activeServices = 0;
-        let pendingQuotes = 0;
-        let pendingPayments = 0;
-        let totalRevenue = 0;
-        let recentActivity: Appointment[] = [];
-
-        if (statsRes.ok) {
-          const statsData = await statsRes.json();
-          totalClients = statsData.totalClients || 0;
-          activeServices = statsData.activeServices || 0;
-          pendingQuotes = statsData.pendingQuotes || 0;
-          pendingPayments = statsData.pendingPayments || 0;
-          totalRevenue = statsData.totalRevenue || 0;
-          recentActivity = statsData.recentActivity || [];
-        }
-
-        setStats({
-          pending,
-          confirmed,
-          total,
-          unreadNotifications,
-          totalClients,
-          activeServices,
-          pendingQuotes,
-          pendingPayments,
-          totalRevenue,
-          recentActivity,
+        if (!statsRes.ok) throw new Error("No se pudo cargar el resumen");
+        const data = await statsRes.json();
+        const notices = notifRes.ok ? await notifRes.json() : {};
+        setStats({ pending: data.pendingAppointments ?? 0, confirmed: data.confirmedAppointments ?? 0,
+          total: data.totalAppointments ?? 0, unreadNotifications: notices.unreadCount ?? 0,
+          totalClients: data.totalClients ?? 0, activeServices: data.activeServices ?? 0,
+          pendingQuotes: data.pendingQuotes ?? 0, pendingPayments: data.pendingPayments ?? 0,
+          totalRevenue: data.totalRevenue ?? 0, recentActivity: Array.isArray(data.recentAppointments) ? data.recentAppointments : [],
         });
-
-        const now = new Date();
-        const next5 = appointments
-          .filter(
-            (a) =>
-              a.status === "CONFIRMED" &&
-              new Date(a.scheduledDate) >= now
-          )
-          .sort(
-            (a, b) =>
-              new Date(a.scheduledDate).getTime() -
-              new Date(b.scheduledDate).getTime()
-          )
-          .slice(0, 5);
-        setUpcoming(next5);
+        setUpcoming(Array.isArray(data.upcomingAppointments) ? data.upcomingAppointments : []);
       } catch {
         setError(true);
       } finally {
@@ -123,8 +68,9 @@ export default function AdminDashboardPage() {
     fetchData();
   }, []);
 
-  function formatDate(dateStr: string) {
-    return new Date(dateStr).toLocaleDateString("es-CO", {
+  function formatDate(dateStr: string, startTime: string) {
+    return new Date(`${dateStr.slice(0, 10)}T${startTime}:00-05:00`).toLocaleDateString("es-CO", {
+      timeZone: "America/Bogota",
       day: "numeric",
       month: "short",
       hour: "2-digit",
@@ -161,10 +107,15 @@ export default function AdminDashboardPage() {
   return (
     <div>
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-white">Dashboard</h1>
+        <h1 className="text-2xl font-bold text-white">Resumen del negocio</h1>
         <p className="text-metal-400 mt-1">Resumen de tu negocio</p>
       </div>
 
+      <div className="mb-6 rounded-xl border border-border bg-surface p-5">
+        <h2 className="font-semibold mb-2">Prepara tu agenda</h2>
+        <p className="text-sm text-metal-400 mb-3">Publica tus días y franjas disponibles para que los clientes puedan solicitar una cita. Después revisa los servicios y los datos del negocio.</p>
+        <Link href="/admin/horarios" className="inline-block text-accent underline font-semibold">Configurar horarios</Link>
+      </div>
       {/* Stats */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
         <div className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-xl p-5">
@@ -345,7 +296,7 @@ export default function AdminDashboardPage() {
                   </p>
                 </div>
                 <span className="text-xs text-metal-400">
-                  {formatDate(appointment.scheduledDate)}
+                  {formatDate(appointment.scheduledDate, appointment.startTime)}
                 </span>
               </div>
             ))}

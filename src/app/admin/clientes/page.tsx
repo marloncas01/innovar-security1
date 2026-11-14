@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import AdminLayout from "@/components/layout/AdminLayout";
 
 interface Client {
   id: string;
@@ -36,7 +35,7 @@ export default function AdminClientesPage() {
   }, [search, page]);
 
   return (
-    <AdminLayout>
+    <>
       <div>
         <div className="mb-6">
           <h1 className="text-2xl font-bold text-white">Clientes</h1>
@@ -151,6 +150,6 @@ export default function AdminClientesPage() {
           </>
         )}
       </div>
-    </AdminLayout>
+    </>
   );
 }

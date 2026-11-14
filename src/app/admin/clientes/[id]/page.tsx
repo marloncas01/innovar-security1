@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import AdminLayout from "@/components/layout/AdminLayout";
 import StatusBadge from "@/components/ui/StatusBadge";
 
 interface ClientDetail {
@@ -57,7 +56,7 @@ export default function AdminClienteDetailPage() {
     }).format(amount);
 
   return (
-    <AdminLayout>
+    <>
       <div>
         <div className="mb-6">
           <Link
@@ -173,6 +172,6 @@ export default function AdminClienteDetailPage() {
           </div>
         )}
       </div>
-    </AdminLayout>
+    </>
   );
 }

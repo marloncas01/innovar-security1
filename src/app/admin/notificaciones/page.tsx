@@ -3,7 +3,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import AdminLayout from "@/components/layout/AdminLayout";
 
 interface Notification {
   id: string;
@@ -123,7 +122,7 @@ export default function AdminNotificacionesPage() {
   if (status === "loading" || status === "unauthenticated") return null;
 
   return (
-    <AdminLayout>
+    <>
       <div className="max-w-2xl mx-auto">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
           <div>
@@ -248,6 +247,6 @@ export default function AdminNotificacionesPage() {
           </div>
         )}
       </div>
-    </AdminLayout>
+    </>
   );
 }

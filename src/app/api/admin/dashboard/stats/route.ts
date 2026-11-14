@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authConfig } from "@/lib/auth";
+import { businessNow } from "@/lib/scheduling";
 import prisma from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
@@ -13,8 +14,8 @@ export async function GET() {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const now = new Date();
-    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const now = businessNow();
+    const today = new Date(`${now.date}T00:00:00Z`);
 
     const [
       totalClients,
@@ -53,11 +54,11 @@ export async function GET() {
       }),
       prisma.appointment.findMany({
         where: {
-          scheduledDate: { gte: today },
+          OR: [{ scheduledDate: { gt: today } }, { scheduledDate: today, startTime: { gte: now.time } }],
           status: { in: ["CONFIRMED", "PENDING"] },
         },
         take: 5,
-        orderBy: { scheduledDate: "asc" },
+        orderBy: [{ scheduledDate: "asc" }, { startTime: "asc" }],
         include: {
           client: true,
           service: true,
