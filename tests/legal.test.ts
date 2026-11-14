@@ -22,12 +22,13 @@ test("el registro exige autorizaciones explícitas separadas y mayoría de edad"
 
 import { getPaymentProvider } from "../src/lib/payments";
 test("el proveedor simulado no puede operar en el sitio publicado", () => {
-  const previous = process.env.NODE_ENV;
-  process.env.NODE_ENV = "production";
+  const environment = process.env as Record<string, string | undefined>;
+  const previous = environment.NODE_ENV;
+  environment.NODE_ENV = "production";
   try {
     assert.throws(() => getPaymentProvider(), /deshabilitada/);
   } finally {
-    if (previous === undefined) delete process.env.NODE_ENV;
-    else process.env.NODE_ENV = previous;
+    if (previous === undefined) delete environment.NODE_ENV;
+    else environment.NODE_ENV = previous;
   }
 });
