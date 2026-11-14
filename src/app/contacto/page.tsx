@@ -40,7 +40,7 @@ const contactInfo = [
   },
   {
     label: "Email",
-    value: "contacto@innovarsecurity.com",
+    value: "Correo pendiente de confirmar",
     icon: (
       <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
         <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
@@ -49,7 +49,7 @@ const contactInfo = [
   },
   {
     label: "Horario",
-    value: "Lunes a Viernes, 8:00 AM - 6:00 PM",
+    value: "Atención según disponibilidad; coordina por WhatsApp",
     icon: (
       <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
         <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -156,7 +156,7 @@ export default function ContactoPage() {
                 </a>
 
                 <a
-                  href="mailto:contacto@innovarsecurity.com"
+                  href="/atencion"
                   className="flex items-center gap-4 p-4 bg-[var(--color-black)] border border-[var(--color-border)] rounded-lg hover:border-[var(--color-accent)] transition-colors"
                 >
                   <div className="w-10 h-10 rounded-lg bg-[var(--color-accent-subtle)] flex items-center justify-center text-[var(--color-accent)] shrink-0">
@@ -165,8 +165,8 @@ export default function ContactoPage() {
                     </svg>
                   </div>
                   <div>
-                    <p className="text-sm font-semibold text-[var(--color-text-primary)]">Correo Electrónico</p>
-                    <p className="text-sm text-[var(--color-accent)]">contacto@innovarsecurity.com</p>
+                    <p className="text-sm font-semibold text-[var(--color-text-primary)]">Peticiones y reclamos</p>
+                    <p className="text-sm text-[var(--color-accent)]">Consultar canales de atención</p>
                   </div>
                 </a>
 

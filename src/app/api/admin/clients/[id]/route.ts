@@ -26,6 +26,7 @@ export async function GET(
             role: true,
             active: true,
             createdAt: true,
+            termsAcceptedAt: true, termsVersion: true, privacyVersion: true,
           },
         },
         appointments: {

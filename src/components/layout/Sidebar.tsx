@@ -144,7 +144,7 @@ const navSections: NavSection[] = [
   },
   {
     title: "SISTEMA",
-    items: [
+    items: [{label:"Preparar entrega",href:"/admin/legal",icon:<span aria-hidden="true">✓</span>},
       {
         label: "Configuración",
         href: "/admin/configuracion",

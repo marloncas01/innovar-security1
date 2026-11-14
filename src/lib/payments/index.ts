@@ -11,6 +11,7 @@ import { TestPaymentProvider } from "./test-provider";
 let providerInstance: PaymentProvider | null = null;
 
 export function getPaymentProvider(): PaymentProvider {
+  if (process.env.NODE_ENV === "production") throw new Error("La pasarela de pruebas está deshabilitada en producción");
   if (providerInstance) return providerInstance;
 
   const providerName = process.env.PAYMENT_PROVIDER || "test";

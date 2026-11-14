@@ -86,6 +86,8 @@ export default function RegisterPage() {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
   const [acceptedTerms, setAcceptedTerms] = useState(false);
+  const [acceptedPrivacy, setAcceptedPrivacy] = useState(false);
+  const [isAdult, setIsAdult] = useState(false);
   const [serverError, setServerError] = useState("");
 
   const validate = () => {
@@ -103,7 +105,7 @@ export default function RegisterPage() {
     e.preventDefault();
     setServerError("");
     if (!validate()) return;
-    if (!acceptedTerms) { setServerError("Debes aceptar los términos y autorizar el tratamiento de tus datos para crear tu cuenta."); return; }
+    if (!acceptedTerms || !acceptedPrivacy || !isAdult) { setServerError("Debes aceptar los términos y autorizar el tratamiento de tus datos para crear tu cuenta."); return; }
 
     setLoading(true);
     try {
@@ -115,7 +117,7 @@ export default function RegisterPage() {
           email: form.email,
           phone: form.phone,
           password: form.password,
-          acceptedTerms,
+          acceptedTerms, acceptedPrivacy, isAdult,
         }),
       });
 
@@ -291,8 +293,10 @@ export default function RegisterPage() {
 
               <div className="flex items-start gap-3 text-sm text-metal-300">
                 <input id="acceptedTerms" type="checkbox" required checked={acceptedTerms} onChange={(e) => setAcceptedTerms(e.target.checked)} className="mt-1 accent-blue-600" />
-                <label htmlFor="acceptedTerms">Acepto los <Link href="/terminos" target="_blank" className="text-accent underline">Términos y Condiciones</Link> y autorizo el tratamiento de mis datos según la <Link href="/privacidad" target="_blank" className="text-accent underline">Política de Privacidad</Link>.</label>
+                <label htmlFor="acceptedTerms">Acepto los <Link href="/terminos" target="_blank" className="text-accent underline">Términos y Condiciones</Link> del servicio.</label>
               </div>
+              <div className="flex items-start gap-2 text-sm text-metal-300"><input id="acceptedPrivacy" type="checkbox" required checked={acceptedPrivacy} onChange={e=>setAcceptedPrivacy(e.target.checked)} className="mt-1" /><label htmlFor="acceptedPrivacy">Autorizo el uso de mis datos para gestionar solicitudes, citas, cotizaciones y soporte según la <Link href="/privacidad" target="_blank" className="text-accent underline">política de datos</Link>. No incluye publicidad.</label></div>
+              <div className="flex items-start gap-2 text-sm text-metal-300"><input id="isAdult" type="checkbox" required checked={isAdult} onChange={e=>setIsAdult(e.target.checked)} className="mt-1" /><label htmlFor="isAdult">Confirmo que soy mayor de 18 años.</label></div>
               <Button type="submit" className="w-full" size="lg" loading={loading}>
                 Crear Cuenta
               </Button>

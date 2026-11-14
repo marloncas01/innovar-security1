@@ -1,109 +1,112 @@
 import Link from "next/link";
-import { Metadata } from "next";
-import PublicNavbar from "@/components/layout/PublicNavbar";
-
+import LegalShell from "@/components/common/LegalShell";
+import type { Metadata } from "next";
+export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
+  title: "Política de tratamiento de datos",
   alternates: { canonical: "/privacidad" },
-  title: "Política de Privacidad",
-  description: "Política de tratamiento de datos personales de Innovar Security de conformidad con la Ley 1581 de 2012 de Colombia.",
 };
-
-export default function PrivacidadPage() {
+export default function Page() {
   return (
-    <>
-      <PublicNavbar />
-
-      <main className="min-h-screen bg-[var(--color-black)] pt-24 pb-16 text-gray-200">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="mb-10">
-            <span className="text-xs font-semibold text-accent uppercase tracking-wider block mb-2">Legal</span>
-            <h1 className="text-3xl sm:text-4xl font-bold text-white mb-3">Política de Tratamiento de Datos Personales</h1>
-            <p className="text-metal-400 text-sm">
-              Última actualización: {new Date().toLocaleDateString("es-CO", { year: "numeric", month: "long", day: "numeric" })}
-            </p>
-          </div>
-
-          <div className="space-y-8 bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl p-6 sm:p-10 leading-relaxed text-sm sm:text-base text-metal-300">
-            <section>
-              <h2 className="text-lg font-bold text-white mb-3">1. Responsable del Tratamiento de Datos</h2>
-              <p>
-                Innovar Security, con sede de operaciones en Fómeque, Cundinamarca, Colombia (contacto@innovarsecurity.com, teléfono 304 445 1436), en cumplimiento de la Ley Estatutaria 1581 de 2012 y el Decreto 1377 de 2013 de la República de Colombia, es el responsable del tratamiento de los datos personales suministrados por los titulares.
-              </p>
-            </section>
-
-            <section>
-              <h2 className="text-lg font-bold text-white mb-3">2. Datos Recolectados</h2>
-              <p>
-                Para prestar nuestros servicios de seguridad electrónica, agendamiento de visitas técnicas y atención comercial, recolectamos los siguientes datos:
-              </p>
-              <ul className="list-disc list-inside mt-2 space-y-1.5 pl-2 text-metal-300">
-                <li><strong className="text-white">Datos de identificación y contacto:</strong> Nombres, apellidos, número de cédula o NIT, correo electrónico y número de teléfono móvil.</li>
-                <li><strong className="text-white">Datos de ubicación:</strong> Dirección física de instalación, municipio, referencias del inmueble y notas de acceso.</li>
-                <li><strong className="text-white">Imágenes e información del entorno:</strong> Fotografías del inmueble cargadas voluntariamente por el titular para evaluar viabilidad técnica y cotizar equipos.</li>
-                <li><strong className="text-white">Información de transacciones:</strong> Historial de citas agendadas, comprobantes de pago y estado de cotizaciones.</li>
-              </ul>
-            </section>
-
-            <section>
-              <h2 className="text-lg font-bold text-white mb-3">3. Finalidades del Tratamiento</h2>
-              <p>Los datos personales recolectados serán utilizados exclusivamente para:</p>
-              <ul className="list-disc list-inside mt-2 space-y-1.5 pl-2 text-metal-300">
-                <li>Gestionar, coordinar y ejecutar visitas técnicas e instalaciones de cámaras de seguridad.</li>
-                <li>Emitir cotizaciones detalladas y procesar pagos asociados a los servicios.</li>
-                <li>Enviar notificaciones y recordatorios relativos a citas agendadas o cambios de estado.</li>
-                <li>Brindar soporte técnico y atención posventa a clientes.</li>
-                <li>Cumplir con las obligaciones fiscales, contables y legales pertinentes.</li>
-              </ul>
-            </section>
-
-            <section>
-              <h2 className="text-lg font-bold text-white mb-3">4. Derechos de los Titulares (Habeas Data)</h2>
-              <p>
-                De acuerdo con la legislación colombiana, todo titular de datos personales tiene derecho a:
-              </p>
-              <ul className="list-disc list-inside mt-2 space-y-1.5 pl-2 text-metal-300">
-                <li>Conocer, actualizar y rectificar sus datos personales frente a Innovar Security.</li>
-                <li>Solicitar prueba de la autorización otorgada para el tratamiento.</li>
-                <li>Ser informado sobre el uso que se ha dado a sus datos.</li>
-                <li>Revocar la autorización o solicitar la supresión del dato cuando no exista un deber legal o contractual de conservarlo.</li>
-                <li>Presentar quejas ante la Superintendencia de Industria y Comercio (SIC) por infracciones a la ley.</li>
-              </ul>
-            </section>
-
-            <section>
-              <h2 className="text-lg font-bold text-white mb-3">5. Seguridad de la Información</h2>
-              <p>
-                Innovar Security adopta medidas técnicas, administrativas y humanas razonables para proteger la información contra adulteración, pérdida, consulta, uso o acceso no autorizado o fraudulento. Las contraseñas de acceso al sistema se almacenan cifradas mediante algoritmos de hash criptográfico de alta seguridad.
-              </p>
-            </section>
-
-            <section>
-              <h2 className="text-lg font-bold text-white mb-3">6. Procedimiento para Ejercer sus Derechos</h2>
-              <p>
-                Para ejercer sus derechos de consulta, rectificación o supresión de datos personales, el titular puede enviar una comunicación escrita al correo electrónico <strong className="text-accent">contacto@innovarsecurity.com</strong> o llamar al <strong className="text-accent">304 445 1436</strong> indicando su nombre, número de documento y la solicitud específica. Las solicitudes serán atendidas dentro de los plazos fijados por la Ley 1581 de 2012.
-              </p>
-            </section>
-          </div>
-
-          <div className="mt-8 text-center">
-            <Link
-              href="/"
-              className="inline-flex items-center gap-2 text-accent hover:text-accent-light text-sm font-semibold transition-colors"
-            >
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-              </svg>
-              Volver al Inicio
-            </Link>
-          </div>
-        </div>
-      </main>
-
-      <footer className="bg-[var(--color-black)] border-t border-[var(--color-border)] py-8 text-center">
-        <p className="text-sm text-metal-500">
-          © {new Date().getFullYear()} Innovar Security. Todos los derechos reservados.
+    <LegalShell
+      title="Política de tratamiento de datos"
+      intro="Conoce qué información usamos, para qué la necesitamos y cómo ejercer tus derechos."
+    >
+      <section>
+        <h2>1. Alcance y finalidades</h2>
+        <p>
+          Esta política cubre los datos que entregas al crear una cuenta,
+          solicitar una visita, gestionar una cotización o comunicarte con
+          Innovar Security. Se utilizan para atender tu solicitud, coordinar
+          servicios, gestionar pagos cuando estén habilitados, brindar soporte y
+          cumplir obligaciones legales. No se autoriza el envío de publicidad
+          por el solo hecho de crear una cuenta.
         </p>
-      </footer>
-    </>
+      </section>
+      <section>
+        <h2>2. Información que tratamos</h2>
+        <p>
+          Nombre, correo y teléfono; dirección y referencias del lugar del
+          servicio; historial de citas y cotizaciones; fotografías que decidas
+          aportar y comprobantes de pago. La identificación puede ser necesaria
+          para facturación o para verificar una solicitud sobre datos
+          personales. Evita enviar documentos, datos sensibles o imágenes de
+          terceros que no sean necesarios.
+        </p>
+        <p>
+          Este portal no ofrece acceso a grabaciones de cámaras ni
+          reconocimiento facial. Las imágenes del inmueble son aportadas por el
+          usuario para evaluar el servicio.
+        </p>
+      </section>
+      <section>
+        <h2>3. Autorización y derechos</h2>
+        <p>
+          Antes de registrarte se solicita tu autorización para estas
+          finalidades. Puedes conocer, consultar gratuitamente, actualizar y
+          corregir tus datos; pedir prueba de la autorización e información
+          sobre su uso; y solicitar su eliminación o revocar la autorización
+          cuando no exista un deber legal o contractual de conservarlos. Los
+          datos sensibles y las respuestas sobre ellos son facultativos. Este
+          portal está dirigido a personas mayores de edad.
+        </p>
+      </section>
+      <section>
+        <h2>4. Cómo presentar una consulta o reclamo</h2>
+        <p>
+          Utiliza el canal de{" "}
+          <Link href="/atencion">peticiones y reclamos</Link>. Indica tu nombre,
+          un medio de respuesta, el derecho que deseas ejercer y los hechos.
+          Verificaremos tu identidad por un medio proporcional a la solicitud.
+          No envíes contraseñas ni códigos de acceso.
+        </p>
+        <p>
+          Las consultas se atienden en hasta 10 días hábiles desde su recepción;
+          si se requiere prórroga, se informará la causa y una nueva fecha, con
+          hasta 5 días hábiles adicionales. Los reclamos completos se atienden
+          en hasta 15 días hábiles contados desde el día siguiente a su
+          recepción, con posible prórroga informada de hasta 8 días hábiles. Si
+          falta información se solicitará completarla conforme a la ley. Antes
+          de acudir a la SIC por protección de datos, debe agotarse la consulta
+          o reclamo ante el responsable o encargado.
+        </p>
+      </section>
+      <section>
+        <h2>5. Proveedores, conservación y seguridad</h2>
+        <p>
+          La aplicación utiliza Vercel para alojamiento y Prisma Postgres para
+          la base de datos. Al elegir WhatsApp, pasas a un servicio externo
+          sujeto a sus políticas. El uso de proveedores tecnológicos puede
+          implicar tratamiento fuera de Colombia; el responsable debe verificar
+          las condiciones contractuales y las reglas aplicables a transmisiones
+          o transferencias internacionales.
+        </p>
+        <p>
+          Se conserva la información durante la gestión del servicio y el tiempo
+          necesario para atender obligaciones legales o contractuales. Después
+          procede su eliminación o anonimización según corresponda. Las
+          contraseñas se almacenan mediante hash; el acceso a información de
+          clientes requiere autenticación. Ningún sistema elimina por completo
+          los riesgos.
+        </p>
+      </section>
+      <section>
+        <h2>6. Vigencia y cambios</h2>
+        <p>
+          Esta versión se publica el 14 de noviembre de 2026. Los cambios
+          sustanciales de finalidad o de responsable deben comunicarse antes de
+          su implementación y requerir una nueva autorización cuando
+          corresponda. La información de identificación pendiente debe
+          completarse para cerrar la entrega legal.
+        </p>
+        <p>
+          Referencia:{" "}
+          <a href="https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=49981">
+            Ley 1581 de 2012
+          </a>{" "}
+          y Decreto 1074 de 2015.
+        </p>
+      </section>
+    </LegalShell>
   );
 }

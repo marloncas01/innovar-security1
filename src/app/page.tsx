@@ -11,10 +11,8 @@ const business = {
   url: siteUrl,
   description: "Instalación y mantenimiento de cámaras de seguridad en Fómeque, Cundinamarca.",
   telephone: "+573044451436",
-  email: "contacto@innovarsecurity.com",
   address: { "@type": "PostalAddress", addressLocality: "Fómeque", addressRegion: "Cundinamarca", addressCountry: "CO" },
   areaServed: { "@type": "City", name: "Fómeque" },
-  openingHoursSpecification: [{ "@type": "OpeningHoursSpecification", dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"], opens: "08:00", closes: "18:00" }],
 };
 
 export default function Page() {

@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { signUpSchema } from "@/lib/validators";
 import bcrypt from "bcryptjs";
+import { LEGAL_VERSION, legalAcceptanceSchema } from "@/lib/legal";
 import { checkRateLimit } from "@/lib/rate-limit";
 
 export async function POST(request: Request) {
@@ -20,6 +21,7 @@ export async function POST(request: Request) {
     if (!body || typeof body !== "object" || !("acceptedTerms" in body) || body.acceptedTerms !== true) {
       return NextResponse.json({ error: "Debes aceptar los términos y autorizar el tratamiento de tus datos" }, { status: 400 });
     }
+    if (!legalAcceptanceSchema.safeParse(body).success) return NextResponse.json({error:"Debes aceptar los términos, autorizar el tratamiento de datos y confirmar que eres mayor de edad"},{status:400});
     const parsed = signUpSchema.safeParse(body);
     if (!parsed.success) {
       return NextResponse.json({ error: parsed.error.issues[0].message }, { status: 400 });
@@ -47,6 +49,9 @@ export async function POST(request: Request) {
         password: hashedPassword,
         name,
         role: "CLIENT",
+        termsAcceptedAt: new Date(),
+        termsVersion: LEGAL_VERSION,
+        privacyVersion: LEGAL_VERSION,
         phone,
         client: {
           create: {

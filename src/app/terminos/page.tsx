@@ -1,126 +1,105 @@
 import Link from "next/link";
-import { Metadata } from "next";
-import PublicNavbar from "@/components/layout/PublicNavbar";
-
+import LegalShell from "@/components/common/LegalShell";
+import type { Metadata } from "next";
+export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
+  title: "Términos del servicio",
   alternates: { canonical: "/terminos" },
-  title: "Términos y Condiciones",
-  description: "Términos y condiciones de uso de la plataforma Innovar Security y prestación de servicios de seguridad electrónica.",
 };
-
-export default function TerminosPage() {
+export default function Page() {
   return (
-    <>
-      <PublicNavbar />
-
-      <main className="min-h-screen bg-[var(--color-black)] pt-24 pb-16 text-gray-200">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="mb-10">
-            <span className="text-xs font-semibold text-accent uppercase tracking-wider block mb-2">Legal</span>
-            <h1 className="text-3xl sm:text-4xl font-bold text-white mb-3">Términos y Condiciones de Uso</h1>
-            <p className="text-metal-400 text-sm">
-              Última actualización: {new Date().toLocaleDateString("es-CO", { year: "numeric", month: "long", day: "numeric" })}
-            </p>
-          </div>
-
-          <div className="space-y-8 bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl p-6 sm:p-10 leading-relaxed text-sm sm:text-base text-metal-300">
-            <section>
-              <h2 className="text-lg font-bold text-white mb-3">1. Identificación del Prestador</h2>
-              <p>
-                Innovar Security, con domicilio principal de operaciones en el municipio de Fómeque, Cundinamarca, Colombia (en adelante &quot;Innovar Security&quot; o &quot;la Empresa&quot;), pone a disposición de sus usuarios y clientes esta plataforma digital para la consulta, solicitud, agendamiento y seguimiento de servicios de videovigilancia y seguridad electrónica.
-              </p>
-            </section>
-
-            <section>
-              <h2 className="text-lg font-bold text-white mb-3">2. Aceptación de los Términos</h2>
-              <p>
-                Al acceder, registrarse o utilizar cualquiera de las funciones de esta plataforma web, el usuario acepta de manera expresa, libre e informada los presentes Términos y Condiciones. Si no está de acuerdo con alguno de los puntos aquí descritos, deberá abstenerse de utilizar el servicio.
-              </p>
-            </section>
-
-            <section>
-              <h2 className="text-lg font-bold text-white mb-3">3. Descripción de los Servicios</h2>
-              <p>
-                Innovar Security presta servicios especializados que comprenden:
-              </p>
-              <ul className="list-disc list-inside mt-2 space-y-1.5 pl-2 text-metal-300">
-                <li>Instalación y configuración de cámaras de seguridad CCTV y cámaras IP.</li>
-                <li>Mantenimiento preventivo y correctivo de sistemas de videovigilancia.</li>
-                <li>Visitas técnicas de diagnóstico, inspección del sitio y levantamiento de requerimientos.</li>
-                <li>Emisión de cotizaciones personalizadas de equipos y mano de obra.</li>
-              </ul>
-            </section>
-
-            <section>
-              <h2 className="text-lg font-bold text-white mb-3">4. Política de Citas, Confirmación y Pagos</h2>
-              <p>
-                Para garantizar la disponibilidad del personal técnico y evitar desplazamientos infructuosos, toda solicitud de visita o servicio técnico está sujeta a disponibilidad de agenda. Una solicitud sólo se considerará formalmente confirmada una vez se complete el procedimiento de confirmación o pago anticipado cuando corresponda.
-              </p>
-              <p className="mt-2">
-                En caso de requerirse reprogramación, el cliente podrá solicitarla a través del portal de usuario con al menos veinticuatro (24) horas de anticipación a la fecha y hora agendada.
-              </p>
-            </section>
-
-            <section>
-              <h2 className="text-lg font-bold text-white mb-3">5. Obligaciones y Declaraciones del Cliente</h2>
-              <p>El cliente se compromete a:</p>
-              <ul className="list-disc list-inside mt-2 space-y-1.5 pl-2 text-metal-300">
-                <li>Suministrar información veraz, completa y actualizada sobre su identidad, ubicación y características del inmueble.</li>
-                <li>Garantizar el acceso seguro del personal técnico en la fecha y horario concertados.</li>
-                <li>Informar oportunamente sobre riesgos eléctricos, trabajos en altura u otras condiciones particulares de la instalación.</li>
-                <li>Respetar la legislación colombiana vigente en materia de privacidad y captura de imágenes en espacios públicos o privados.</li>
-              </ul>
-            </section>
-
-            <section>
-              <h2 className="text-lg font-bold text-white mb-3">6. Garantías y Limitación de Responsabilidad</h2>
-              <p>
-                Innovar Security garantiza la calidad de la mano de obra conforme a las buenas prácticas técnicas del sector. Las garantías sobre equipos y dispositivos electrónicos estarán sujetas a los términos y vigencias expedidas por los fabricantes o distribuidores autorizados.
-              </p>
-              <p className="mt-2">
-                La Empresa no responderá por interrupciones en el servicio derivadas de fallas eléctricas ajenas, cortes de suministro de internet provisto por terceros o manipulación indebida de los equipos por personal no autorizado.
-              </p>
-            </section>
-
-            <section>
-              <h2 className="text-lg font-bold text-white mb-3">7. Legislación Aplicable y Jurisdicción</h2>
-              <p>
-                Estos términos se rigen e interpretan conforme a las leyes de la República de Colombia. Cualquier controversia será dirimida prioritariamente mediante mecanismos de arreglo directo o centros de conciliación autorizados en Cundinamarca.
-              </p>
-            </section>
-
-            <section>
-              <h2 className="text-lg font-bold text-white mb-3">8. Canales de Contacto</h2>
-              <p>
-                Para dudas, aclaraciones o soporte sobre estos términos, comuníquese a través de:
-              </p>
-              <div className="mt-3 p-4 bg-black/40 rounded-xl border border-metal-800 space-y-1 text-sm">
-                <p><span className="text-metal-400 font-medium">Línea de atención:</span> 304 445 1436</p>
-                <p><span className="text-metal-400 font-medium">Correo electrónico:</span> contacto@innovarsecurity.com</p>
-                <p><span className="text-metal-400 font-medium">Ubicación:</span> Fómeque, Cundinamarca, Colombia</p>
-              </div>
-            </section>
-          </div>
-
-          <div className="mt-8 text-center">
-            <Link
-              href="/"
-              className="inline-flex items-center gap-2 text-accent hover:text-accent-light text-sm font-semibold transition-colors"
-            >
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-              </svg>
-              Volver al Inicio
-            </Link>
-          </div>
-        </div>
-      </main>
-
-      <footer className="bg-[var(--color-black)] border-t border-[var(--color-border)] py-8 text-center">
-        <p className="text-sm text-metal-500">
-          © {new Date().getFullYear()} Innovar Security. Todos los derechos reservados.
+    <LegalShell
+      title="Términos del servicio"
+      intro="Información para solicitar, cotizar y coordinar servicios de seguridad electrónica."
+    >
+      <section>
+        <h2>1. Solicitudes y contratación</h2>
+        <p>
+          Puedes explorar los servicios sin crear una cuenta. El registro y la
+          solicitud de visita no equivalen por sí solos a una compra ni
+          confirman una instalación. La confirmación de una cita se consulta en
+          el portal o se acuerda por el canal de atención. La contratación exige
+          conocer el alcance y aceptar la propuesta correspondiente.
         </p>
-      </footer>
-    </>
+      </section>
+      <section>
+        <h2>2. Cotizaciones, precios y pagos</h2>
+        <p>
+          Cuando el precio aparezca como “Por cotizar”, se definirá después de
+          evaluar el lugar. Antes de aceptar, solicita el detalle de equipos,
+          cantidades, mano de obra, impuestos aplicables, desplazamientos, valor
+          total en pesos colombianos, vigencia de la oferta y fecha estimada de
+          ejecución. Los trabajos adicionales requieren aceptación previa.
+        </p>
+        <p>
+          Los pagos solo se ofrecen cuando estén habilitados, exista un importe
+          y se hayan configurado los datos del destinatario. Comprueba el
+          titular y la cuenta antes de transferir. Reportar un comprobante no
+          significa que el pago ya esté confirmado.
+        </p>
+      </section>
+      <section>
+        <h2>3. Agenda y cambios</h2>
+        <p>
+          Los horarios publicados corresponden a Colombia y dependen de la
+          duración del servicio y la disponibilidad. Puedes solicitar un cambio
+          o cancelación desde tu cuenta o comunicarte con el equipo. Si existe
+          un anticipo, su devolución o aplicación se revisará según el trabajo
+          ejecutado, el acuerdo y los derechos legales del consumidor. No se
+          presume una penalidad automática.
+        </p>
+      </section>
+      <section>
+        <h2>4. Garantía, retracto y reversión</h2>
+        <p>
+          La garantía legal y los derechos del consumidor se conservan. Las
+          condiciones particulares y los plazos de equipos e instalación deben
+          entregarse en la cotización o soporte de venta; no se limitan
+          únicamente a lo que ofrezca el fabricante.
+        </p>
+        <p>
+          En ventas a distancia, el retracto puede ejercerse dentro de los cinco
+          días hábiles previstos por la ley cuando resulte aplicable. Existen
+          excepciones, entre ellas servicios cuya ejecución haya comenzado con
+          acuerdo del consumidor. Solicita su evaluación por el canal de
+          atención con el soporte de la operación. Para reversión de pagos
+          electrónicos por las causales legales, actúa dentro del plazo legal
+          aplicable y comunícate también con el emisor del instrumento de pago
+          cuando corresponda. El procedimiento depende del medio utilizado.
+        </p>
+      </section>
+      <section>
+        <h2>5. Uso responsable y privacidad</h2>
+        <p>
+          Debes aportar datos veraces, proteger tus credenciales, contar con
+          autorización para intervenir el inmueble y comunicar condiciones de
+          acceso o riesgo. La instalación de cámaras debe respetar los derechos
+          de terceros. El servicio no constituye una garantía de prevención de
+          delitos ni un servicio de vigilancia o monitoreo permanente contratado
+          por este portal.
+        </p>
+      </section>
+      <section>
+        <h2>6. Atención y derechos del consumidor</h2>
+        <p>
+          Puedes presentar solicitudes de soporte, garantía, devolución o
+          reclamos en <Link href="/atencion">Atención al cliente</Link>. Estos
+          términos no implican renuncia a derechos irrenunciables ni restringen
+          el acceso a autoridades competentes. Se aplica la legislación
+          colombiana.
+        </p>
+        <p>
+          Consulta el{" "}
+          <a href="https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=44306">
+            Estatuto del Consumidor
+          </a>{" "}
+          y la{" "}
+          <a href="https://www.sic.gov.co/">
+            Superintendencia de Industria y Comercio
+          </a>
+          .
+        </p>
+      </section>
+    </LegalShell>
   );
 }

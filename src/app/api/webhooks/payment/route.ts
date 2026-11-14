@@ -9,7 +9,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
   } else {
-    console.warn("[SECURITY] WEBHOOK_SECRET not set — webhook is unprotected");
+    return NextResponse.json({error:"Integración de pagos no habilitada"},{status:503});
   }
 
   try {

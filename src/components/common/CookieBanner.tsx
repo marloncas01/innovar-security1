@@ -7,17 +7,12 @@ export default function CookieBanner() {
   const [show, setShow] = useState(false);
 
   useEffect(() => {
-    try { setShow(!localStorage.getItem("cookie_consent")); }
+    try { setShow(!localStorage.getItem("cookie_notice_v2")); }
     catch { setShow(true); }
   }, []);
 
   const handleAccept = () => {
-    try { localStorage.setItem("cookie_consent", "accepted"); } catch { /* Browser storage may be disabled. */ }
-    setShow(false);
-  };
-
-  const handleDecline = () => {
-    try { localStorage.setItem("cookie_consent", "essential_only"); } catch { /* Browser storage may be disabled. */ }
+    try { localStorage.setItem("cookie_notice_v2", "understood"); } catch { /* Browser storage may be disabled. */ }
     setShow(false);
   };
 
@@ -28,31 +23,18 @@ export default function CookieBanner() {
       <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
         <div className="space-y-1 text-sm text-metal-300 max-w-4xl">
           <p className="font-semibold text-white flex items-center gap-2">
-            <span>🍪</span> Política de Cookies y Protección de Datos
+            Cookies esenciales
           </p>
           <p className="text-xs text-metal-400 leading-relaxed">
-            Utilizamos cookies técnicas y esenciales para garantizar la seguridad de tus sesiones, procesar tus agendamientos de citas y proteger tus transacciones bajo la normativa colombiana de Habeas Data (Ley 1581 de 2012). Puedes consultar nuestra{" "}
-            <Link href="/privacidad" className="text-accent hover:underline">
-              Política de Privacidad
-            </Link>{" "}
-            y{" "}
-            <Link href="/terminos" className="text-accent hover:underline">
-              Términos de Servicio
-            </Link>.
+            Este sitio usa cookies para iniciar sesión y proteger tu cuenta. Esta versión no incorpora analítica ni publicidad opcional. Consulta los detalles en nuestra <Link href="/cookies" className="text-cyan-300 underline">información sobre cookies</Link>.
           </p>
         </div>
         <div className="flex items-center gap-3 shrink-0 w-full sm:w-auto">
           <button
-            onClick={handleDecline}
-            className="flex-1 sm:flex-none px-4 py-2 text-xs font-medium text-metal-400 hover:text-white bg-metal-900 border border-metal-700 rounded-lg transition-colors"
-          >
-            Solo Esenciales
-          </button>
-          <button
             onClick={handleAccept}
             className="flex-1 sm:flex-none px-5 py-2 text-xs font-semibold text-white bg-accent hover:bg-accent-dark rounded-lg transition-all shadow-glow"
           >
-            Aceptar Todo
+            Entendido
           </button>
         </div>
       </div>

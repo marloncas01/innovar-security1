@@ -12,7 +12,7 @@ interface ClientDetail {
   phone: string;
   address: string | null;
   municipality: string | null;
-  user: { email: string; active: boolean; createdAt: string };
+  user: { email: string; active: boolean; createdAt: string; termsAcceptedAt: string | null; termsVersion: string | null; privacyVersion: string | null };
   appointments: {
     id: string;
     status: string;
@@ -112,6 +112,7 @@ export default function AdminClienteDetailPage() {
               </div>
             </div>
 
+            <section className="bg-surface border border-border rounded-xl p-6"><h2 className="text-lg font-semibold mb-3">Autorizaciones del registro</h2>{client.user.termsAcceptedAt ? <p className="text-sm text-metal-300">Aceptación registrada: {new Date(client.user.termsAcceptedAt).toLocaleString("es-CO",{timeZone:"America/Bogota"})}. Términos: {client.user.termsVersion}; política de datos: {client.user.privacyVersion}.</p> : <p className="text-sm text-amber-200">Sin constancia de aceptación en esta versión. No se presume autorización histórica.</p>}</section>
             {/* Appointments */}
             <div className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-xl p-6">
               <h2 className="text-lg font-semibold text-white mb-4">
